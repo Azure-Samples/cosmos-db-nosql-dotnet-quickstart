@@ -1,0 +1,140 @@
+﻿@page "/"
+@inject CosmosClient client
+@using System.Text
+
+<pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
+    @_console.ToString()
+</pre>
+
+<section class="d-flex justify-content-center">
+    <button type="button" class="btn btn-primary @(_runAgainEnabled ? "" : "disabled")" @onclick="RunAgain">
+        <i class="bi bi-arrow-clockwise"></i>
+        Run again
+    </button>
+</section>
+
+<footer class="fixed-bottom bg-secondary bg-body-secondary border">
+    <small class="px-5 fw-light fst-italic">
+        <strong>
+            ENDPOINT:
+        </strong>
+        @client.Endpoint
+    </small>
+</footer>
+
+@code {
+    private StringBuilder _console = new();
+
+    private bool _runAgainEnabled = false;
+
+    protected override void OnInitialized() => GenerateQueryDataAsync();
+
+    private void RunAgain() => GenerateQueryDataAsync();
+
+    private async void GenerateQueryDataAsync()
+    {
+        await SetRunAgain(false);
+        await ClearConsoleAsync();
+
+        await WriteToConsoleAync("Current Status:\tStarting...");
+
+        Database database = client.GetDatabase("cosmicworks");
+        await WriteToConsoleAync($"Get database:\t{database.Id}");
+
+        Container container = database.GetContainer("products");
+        await WriteToConsoleAync($"Get container:\t{container.Id}");
+
+        {
+            Product item = new(
+            id: "68719518391",
+            category: "gear-surf-surfboards",
+            name: "Yamba Surfboard",
+            quantity: 12,
+            price: 850.00m,
+            clearance: false
+            );
+
+            ItemResponse<Product> response = await container.UpsertItemAsync<Product>(
+            item: item,
+            partitionKey: new PartitionKey("gear-surf-surfboards")
+            );
+            await WriteToConsoleAync($"Upserted item:\t{response.Resource}");
+            await WriteToConsoleAync($"Status code:\t{response.StatusCode}");
+            await WriteToConsoleAync($"Request charge:\t{response.RequestCharge:0.00}");
+        }
+
+        {
+            Product item = new(
+            id: "68719518371",
+            category: "gear-surf-surfboards",
+            name: "Kiama Classic Surfboard",
+            quantity: 25,
+            price: 790.00m,
+            clearance: false
+            );
+
+            ItemResponse<Product> response = await container.UpsertItemAsync<Product>(
+            item: item,
+            partitionKey: new PartitionKey("gear-surf-surfboards")
+            );
+            await WriteToConsoleAync($"Upserted item:\t{response.Resource}");
+            await WriteToConsoleAync($"Status code:\t{response.StatusCode}");
+            await WriteToConsoleAync($"Request charge:\t{response.RequestCharge:0.00}");
+        }
+
+        {
+            ItemResponse<Product> response = await container.ReadItemAsync<Product>(
+            id: "68719518391",
+            partitionKey: new PartitionKey("gear-surf-surfboards")
+            );
+            await WriteToConsoleAync($"Read item id:\t{response.Resource.id}");
+            await WriteToConsoleAync($"Read item:\t{response.Resource}");
+            await WriteToConsoleAync($"Status code:\t{response.StatusCode}");
+            await WriteToConsoleAync($"Request charge:\t{response.RequestCharge:0.00}");
+        }
+
+        {
+            var query = new QueryDefinition(
+            query: "SELECT * FROM products p WHERE p.category = @category"
+            )
+            .WithParameter("@category", "gear-surf-surfboards");
+
+            using FeedIterator<Product> feed = container.GetItemQueryIterator<Product>(
+            queryDefinition: query
+            );
+            await WriteToConsoleAync($"Ran query:\t{query.QueryText}");
+
+            while (feed.HasMoreResults)
+            {
+                FeedResponse<Product> response = await feed.ReadNextAsync();
+                foreach (Product item in response)
+                {
+                    await WriteToConsoleAync($"Found item:\t{item.name}\t[{item.id}]");
+                }
+                await WriteToConsoleAync($"Request charge:\t{response.RequestCharge:0.00}");
+            }
+        }
+
+        await WriteToConsoleAync("Current Status:\tStopping...");
+        await SetRunAgain(true);
+
+        async Task WriteToConsoleAync(string message)
+        {
+            _console.AppendLine(message);
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(TimeSpan.FromSeconds(0.75));
+        }
+
+        async Task ClearConsoleAsync()
+        {
+            _console.Clear();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        async Task SetRunAgain(bool state)
+        {
+            _runAgainEnabled = state;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
