@@ -33,7 +33,7 @@ module appServiceSite '../core/web/app-service/site.bicep' = {
         'azd-service-name': serviceTag
       })
     runtimeName: 'dotnetcore' // ASP.NET
-    runtimeVersion: '8.0' // .NET 8 (LTS)
+    runtimeVersion: '7.0' // .NET 7 (LTS)
     enableSystemAssignedManagedIdentity: true // Create system-assigned managed identity
   }
 }
@@ -49,7 +49,7 @@ module appServiceConfig '../core/web/app-service/config.bicep' = {
     appSettings: {
       SCM_DO_BUILD_DURING_DEPLOYMENT: string(false)
       ENABLE_ORYX_BUILD: string(true)
-      WEBSITES_PORT: '8080'
+      WEBSITES_PORT: '80'
       AZURE_COSMOS_DB_NOSQL_ENDPOINT: databaseAccountEndpoint
     }
   }
