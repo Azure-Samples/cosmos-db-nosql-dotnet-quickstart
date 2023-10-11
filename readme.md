@@ -1,6 +1,6 @@
 # Quickstart: Azure Cosmos DB for NoSQL client library for .NET
 
-This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`]() and the [`Azure.Identity`]() libraries from NuGet. Modify the source code and leverage the Infrastructure as Code (IaC) Bicep assets to get up and running quickly.
+This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos) and the [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity) libraries from NuGet. Modify the source code and leverage the Infrastructure as Code (IaC) Bicep assets to get up and running quickly.
 
 When you are finished, you will have a fully functional web application deployed to Azure.
 
