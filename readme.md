@@ -54,8 +54,8 @@ flowchart TB
     subgraph cosmos-db[Azure Cosmos DB]
         subgraph database-cosmicworks[Database: cosmicworks]
             subgraph container-products[Container: products]
-                prd-cirroa[Product: Cirroa Tent]
-                prd-kuloar[Product: Kuloar Tent]
+                prd-yamba[Product: Yamba Surfboard]
+                prd-kiama-classic[Product: Kiama Classic Surfboard]
             end
         end
     end
