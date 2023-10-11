@@ -6,11 +6,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<CosmosClient>((_) =>
-    // <create-client>
+    // <create_client>
     new CosmosClient(
         accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
         tokenCredential: new DefaultAzureCredential()
-// </create-client>
+    // </create_client>
 ));
 
 var app = builder.Build();
