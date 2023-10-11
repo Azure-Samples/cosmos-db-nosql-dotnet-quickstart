@@ -1,4 +1,4 @@
-name: Validate code
+name: Validate code quality
 on:  
   schedule:
     - cron: '0 0 * * 2'
