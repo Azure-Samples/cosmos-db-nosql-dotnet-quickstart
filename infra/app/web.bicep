@@ -9,52 +9,47 @@ param tags object = {}
 @description('Endpoint for Azure Cosmos DB for NoSQL account.')
 param databaseAccountEndpoint string
 
-module appServicePlan '../core/web/app-service/plan.bicep' = {
-  name: 'app-service-plan'
+@description('Name of the container image to deploy')
+param containerImage string = 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart:main'
+
+module containerAppsEnvironment '../core/web/container-apps/environments/managed.bicep' = {
+  name: 'container-apps-env'
   params: {
     name: planName
     location: location
     tags: tags
-    kind: 'linux' // Use Linux
-    sku: 'B1' // Basic tier
   }
 }
 
-module appServiceSite '../core/web/app-service/site.bicep' = {
-  name: 'app-service-site'
+module containerAppsApp '../core/web/container-apps/app.bicep' = {
+  name: 'container-apps-app'
   dependsOn: [
-    appServicePlan
+    containerAppsEnvironment
   ]
   params: {
     name: siteName
-    parentPlanName: appServicePlan.outputs.name
+    parentEnvironmentName: containerAppsEnvironment.outputs.name
     location: location
     tags: union(tags, {
         'azd-service-name': serviceTag
       })
-    runtimeName: 'dotnetcore' // ASP.NET
-    runtimeVersion: '7.0' // .NET 7 (LTS)
+    containerImage: containerImage // Use container image from GitHub
+    secrets: [
+      {
+        name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret
+        value: databaseAccountEndpoint // NoSQL database account endpoint
+      }
+    ]
+    environmentVariables: [
+      {
+        name: 'AZURE_COSMOS_DB_NOSQL_ENDPOINT' // Name of the environment variable referenced in the application
+        secretRef: 'azure-cosmos-db-nosql-endpoint' // Reference to secret
+      }
+    ]
     enableSystemAssignedManagedIdentity: true // Create system-assigned managed identity
   }
 }
 
-module appServiceConfig '../core/web/app-service/config.bicep' = {
-  name: 'app-service-config'
-  dependsOn: [
-    appServicePlan
-    appServiceSite
-  ]
-  params: {
-    parentSiteName: appServiceSite.outputs.name
-    appSettings: {
-      SCM_DO_BUILD_DURING_DEPLOYMENT: string(false)
-      ENABLE_ORYX_BUILD: string(true)
-      WEBSITES_PORT: '80'
-      AZURE_COSMOS_DB_NOSQL_ENDPOINT: databaseAccountEndpoint
-    }
-  }
-}
-
-output endpoint string = appServiceSite.outputs.endpoint
-output siteName string = appServiceSite.outputs.name
-output siteManagedIdentityPrincipalId string = appServiceSite.outputs.managedIdentityPrincipalId
+output endpoint string = containerAppsApp.outputs.endpoint
+output siteName string = containerAppsApp.outputs.name
+output siteManagedIdentityPrincipalId string = containerAppsApp.outputs.managedIdentityPrincipalId
