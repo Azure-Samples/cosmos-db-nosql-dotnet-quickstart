@@ -33,7 +33,8 @@ jobs:
       - name: Build and push container image
         uses: docker/build-push-action@v5
         with:
-          context: ./src/web
+          context: ./src
+          file: ./src/web/Dockerfile
           push: true
           tags: ${{ steps.extract-metadata.outputs.tags }}
           labels: ${{ steps.extract-metadata.outputs.labels }}
