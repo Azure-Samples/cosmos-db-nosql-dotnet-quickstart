@@ -113,19 +113,29 @@
             using FeedIterator<Product> feed = container.GetItemQueryIterator<Product>(
                 queryDefinition: query
             );
+            // </query_items>
             await WriteToConsoleAync($"Ran query:\t{query.QueryText}");
 
+            // <parse_results>
+            List<Product> items = new();
+            double requestCharge = 0d;
             while (feed.HasMoreResults)
             {
                 FeedResponse<Product> response = await feed.ReadNextAsync();
                 foreach (Product item in response)
                 {
                     // Do something with each item
-                    await WriteToConsoleAync($"Found item:\t{item.name}\t[{item.id}]");
+                    items.Add(item);
                 }
-                await WriteToConsoleAync($"Request charge:\t{response.RequestCharge:0.00}");
+                requestCharge += response.RequestCharge;
             }
-            // </query_items>
+            // </parse_results>
+
+            foreach(var item in items)
+            {
+                await WriteToConsoleAync($"Found item:\t{item.name}\t[{item.id}]");
+            }
+            await WriteToConsoleAync($"Request charge:\t{requestCharge:0.00}");
         }
 
         await WriteToConsoleAync("Current Status:\tStopping...");
