@@ -10,7 +10,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
-  validate-dotnet:
+  deploy-container:
     name: Build and push Docker container image
     runs-on: ubuntu-latest
     permissions:
