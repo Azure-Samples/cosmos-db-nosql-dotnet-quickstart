@@ -1,4 +1,4 @@
-name: Deploy Docker container image
+name: Build Docker container image
 on:  
   schedule:
     - cron: '0 0 * * 2'
