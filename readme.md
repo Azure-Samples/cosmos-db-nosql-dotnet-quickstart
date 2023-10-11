@@ -15,7 +15,7 @@ When you are finished, you will have a fully functional web application deployed
 The following prerequisites are required to use this application. Please ensure that you have them all installed locally.
 
 - [Azure Developer CLI](https://aka.ms/azd-install)
-- [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) 
+- [.NET SDK 7.0](https://dotnet.microsoft.com/download/dotnet/7.0) 
 
 ### Quickstart
 
@@ -49,7 +49,7 @@ Here's a high level architecture diagram that illustrates these components. Noti
 %%{ init: { 'theme': 'base', 'themeVariables': { 'background': '#243A5E', 'primaryColor': '#50E6FF', 'primaryBorderColor': '#243A5E', 'tertiaryBorderColor': '#50E6FF', 'tertiaryColor': '#243A5E', 'fontFamily': 'Segoe UI', 'lineColor': '#FFFFFF', 'primaryTextColor': '#243A5E', 'tertiaryTextColor': '#FFFFFF' } }}%%
 flowchart TB
     subgraph app-service[Azure App Service]
-        app-framework([.NET 8 - Blazor])
+        app-framework([.NET 7 - Blazor])
     end
     subgraph cosmos-db[Azure Cosmos DB]
         subgraph database-cosmicworks[Database: cosmicworks]
