@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '0 0 * * 2'
   workflow_dispatch:
+  pull_request:
   push:
     branches:
       - main
@@ -31,10 +32,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - name: Build and push container image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v5        
         with:
-          context: ./src
-          file: ./src/web/Dockerfile
-          push: true
+          context: ./src/web
+          load: github.event_name == 'pull_request'
+          push: github.event_name != 'pull_request'
           tags: ${{ steps.extract-metadata.outputs.tags }}
           labels: ${{ steps.extract-metadata.outputs.labels }}
