@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 jobs:
   deploy-container:
-    name: Build and push Docker container image
+    name: Build Docker container image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -31,11 +31,11 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - name: Build and push container image
+      - name: Build container image
         uses: docker/build-push-action@v5        
         with:
           context: ./src/web
-          load: github.event_name == 'pull_request'
-          push: github.event_name != 'pull_request'
+          load: ${{ github.event_name == 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.extract-metadata.outputs.tags }}
           labels: ${{ steps.extract-metadata.outputs.labels }}
