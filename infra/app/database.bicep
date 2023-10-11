@@ -30,9 +30,6 @@ module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
 
 module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
   name: 'cosmos-db-database'
-  dependsOn: [
-    cosmosDbAccount
-  ]
   params: {
     name: database.name
     parentAccountName: cosmosDbAccount.outputs.name
@@ -45,10 +42,6 @@ module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
 
 module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, index) in containers: {
   name: 'cosmos-db-container-${index}'
-  dependsOn: [
-    cosmosDbAccount
-    cosmosDbDatabase
-  ]
   params: {
     name: container.name
     parentAccountName: cosmosDbAccount.outputs.name

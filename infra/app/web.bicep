@@ -23,9 +23,6 @@ module containerAppsEnvironment '../core/web/container-apps/environments/managed
 
 module containerAppsApp '../core/web/container-apps/app.bicep' = {
   name: 'container-apps-app'
-  dependsOn: [
-    containerAppsEnvironment
-  ]
   params: {
     name: siteName
     parentEnvironmentName: containerAppsEnvironment.outputs.name

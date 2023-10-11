@@ -46,9 +46,6 @@ module database 'app/database.bicep' = {
 module web 'app/web.bicep' = {
   name: serviceName
   scope: resourceGroup
-  dependsOn: [
-    database
-  ]
   params: {
     planName: !empty(appServicePlanName) ? appServicePlanName : '${abbreviations.appServicePlan}-${resourceToken}'
     siteName: !empty(appServiceSiteName) ? appServiceSiteName : '${abbreviations.appServiceSite}-${resourceToken}'
@@ -62,10 +59,6 @@ module web 'app/web.bicep' = {
 module security 'app/security.bicep' = {
   name: 'security'
   scope: resourceGroup
-  dependsOn: [
-    web
-    database
-  ]
   params: {
     databaseAccountName: database.outputs.accountName
     principalIds: empty(principalId) ? [ web.outputs.siteManagedIdentityPrincipalId ] : [ principalId, web.outputs.siteManagedIdentityPrincipalId ]
