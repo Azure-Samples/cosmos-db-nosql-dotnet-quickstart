@@ -124,7 +124,6 @@
                 FeedResponse<Product> response = await feed.ReadNextAsync();
                 foreach (Product item in response)
                 {
-                    // Do something with each item
                     items.Add(item);
                 }
                 requestCharge += response.RequestCharge;
