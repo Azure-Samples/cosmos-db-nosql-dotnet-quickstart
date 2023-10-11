@@ -1,6 +1,6 @@
 # Quickstart: Azure Cosmos DB for NoSQL client library for .NET
 
-This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`]() and the [`Azure.Identity`]() libraries from NuGet. Modify the source code and leverage the Infrastructure as Code (IaC) Bicep assets to get up and running quickly.
+This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos) and the [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity) libraries from NuGet. Modify the source code and leverage the Infrastructure as Code (IaC) Bicep assets to get up and running quickly.
 
 When you are finished, you will have a fully functional web application deployed to Azure.
 
@@ -54,8 +54,8 @@ flowchart TB
     subgraph cosmos-db[Azure Cosmos DB]
         subgraph database-cosmicworks[Database: cosmicworks]
             subgraph container-products[Container: products]
-                prd-cirroa[Product: Cirroa Tent]
-                prd-kuloar[Product: Kuloar Tent]
+                prd-yamba[Product: Yamba Surfboard]
+                prd-kiama-classic[Product: Kiama Classic Surfboard]
             end
         end
     end
@@ -64,7 +64,7 @@ flowchart TB
 
 ### Cost of provisioning and deploying this template
 
-This template provisions resources to an Azure subscription that you will select upon provisioning them. Refer to the [Pricing calculator for Microsoft Azure](https://azure.microsoft.com/pricing/calculator/) to estimate the cost you might incur when this template is running on Azure and, if needed, update the included Azure resource definitions found in `infra/main.bicep` to suit your needs.
+This template provisions resources to an Azure subscription that you will select upon provisioning them. Refer to the [Pricing calculator for Microsoft Azure](https://azure.microsoft.com/pricing/calculator/) to estimate the cost you might incur when this template is running on Azure and, if needed, update the included Azure resource definitions found in [`infra/main.bicep`](infra/main.bicep) to suit your needs.
 
 ### Application Code
 
