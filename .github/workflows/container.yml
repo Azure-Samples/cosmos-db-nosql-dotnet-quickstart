@@ -34,7 +34,8 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v5        
         with:
-          context: ./src/web
+          context: ./src/
+          file: ./src/web/Dockerfile
           load: ${{ github.event_name == 'pull_request' }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.extract-metadata.outputs.tags }}
