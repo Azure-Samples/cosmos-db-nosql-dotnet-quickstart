@@ -9,17 +9,7 @@ on:
       - main
 jobs:
   validate-dotnet:
-    name: Validate .NET solution
-    runs-on: ubuntu-latest
-    container: mcr.microsoft.com/dotnet/sdk:7.0
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4     
-      - name: Check .NET version
-        run: dotnet --version       
-      - name: Build .NET solution
-        run: dotnet build
-        working-directory: ./src
-      - name: Check .NET code format
-        run: dotnet format --verify-no-changes
+      uses: azure-samples/code-validation/.github/workflows/dotnet.yml@main
+      with:
+        version: 7.0
         working-directory: ./src
