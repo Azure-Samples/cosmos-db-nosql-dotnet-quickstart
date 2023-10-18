@@ -4,9 +4,15 @@ param name string
 param location string = resourceGroup().location
 param tags object = {}
 
+@allowed([
+  'linux'
+])
 @description('OS type of the plan. Defaults to "linux".')
 param kind string = 'linux'
 
+@allowed([
+  'F1'
+])
 @description('SKU for the plan. Defaults to "F1".')
 param sku string = 'F1'
 

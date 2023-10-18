@@ -8,7 +8,14 @@ param tags object = {}
 param parentPlanName string
 
 @allowed([
-  'dotnet', 'dotnetcore', 'dotnet-isolated', 'node', 'python', 'java', 'powershell', 'custom'
+  'dotnet'
+  'dotnetcore'
+  'dotnet-isolated'
+  'node'
+  'python'
+  'java'
+  'powershell'
+  'custom'
 ])
 @description('Runtime to use for the site.')
 param runtimeName string
@@ -23,7 +30,7 @@ param kind string = 'app,linux'
 param alwaysOn bool = true
 
 @description('Allowed origins for client-side CORS request on the site.')
-param allowedCorsOrigins array = []
+param allowedCorsOrigins string[] = []
 
 @description('Enable system-assigned managed identity. Defaults to false.')
 param enableSystemAssignedManagedIdentity bool = false

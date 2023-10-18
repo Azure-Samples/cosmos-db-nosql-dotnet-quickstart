@@ -1,16 +1,16 @@
-metadata description = 'Create Azure Cosmos DB for NoSQL resources.'
+metadata description = 'Create database accounts.'
 
 param accountName string
 param location string = resourceGroup().location
 param tags object = {}
 
-param database object = {
+var database = {
   name: 'cosmicworks' // Based on AdventureWorksLT data set
   autoscale: true // Scale at the database level
   throughput: 1000 // Enable autoscale with a minimum of 100 RUs and a maximum of 1,000 RUs
 }
 
-param containers array = [
+var containers = [
   {
     name: 'products' // Set of products
     partitionKeyPaths: [
@@ -29,33 +29,26 @@ module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
 }
 
 module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
-  name: 'cosmos-db-database'
-  dependsOn: [
-    cosmosDbAccount
-  ]
+  name: 'cosmos-db-database-${database.name}'
   params: {
     name: database.name
     parentAccountName: cosmosDbAccount.outputs.name
+    tags: tags
     setThroughput: true
     autoscale: database.autoscale
     throughput: database.throughput
-    tags: tags
   }
 }
 
-module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, index) in containers: {
-  name: 'cosmos-db-container-${index}'
-  dependsOn: [
-    cosmosDbAccount
-    cosmosDbDatabase
-  ]
+module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, _) in containers: {
+  name: 'cosmos-db-container-${container.name}'
   params: {
     name: container.name
     parentAccountName: cosmosDbAccount.outputs.name
     parentDatabaseName: cosmosDbDatabase.outputs.name
+    tags: tags
     setThroughput: false
     partitionKeyPaths: container.partitionKeyPaths
-    tags: tags
   }
 }]
 

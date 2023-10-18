@@ -1,9 +1,12 @@
-metadata description = 'Create identity resources for Azure Cosmos DB and Azure App Service.'
+metadata description = 'Create role assignment and definition resources.'
 
 param databaseAccountName string
 
-@description('Id of the principal to assign database and application roles.')
-param principalIds array
+@description('Id of the service principals to assign database and application roles.')
+param appPrincipalId string = ''
+
+@description('Id of the user principals to assign database and application roles.')
+param userPrincipalId string = ''
 
 resource database 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
   name: databaseAccountName
@@ -22,15 +25,47 @@ module nosqlDefinition '../core/database/cosmos-db/nosql/role/definition.bicep' 
   }
 }
 
-module nosqlAssignments '../core/database/cosmos-db/nosql/role/assignment.bicep' = [for (principalId, index) in principalIds: {
-  name: 'nosql-role-assignment-${index}'
+module nosqlAppAssignment '../core/database/cosmos-db/nosql/role/assignment.bicep' = if (!empty(appPrincipalId)) {
+  name: 'nosql-role-assignment-app'
   params: {
     targetAccountName: database.name // Existing account
     roleDefinitionId: nosqlDefinition.outputs.id // New role definition
-    principalId: principalId // Principal to assign role
+    principalId: appPrincipalId // Principal to assign role
   }
-}]
+}
 
-output nosqlRoleDefinitionId string = nosqlDefinition.outputs.id
-output nosqlRoleAssignmentIds array = [for (_, index) in principalIds: nosqlAssignments[index].outputs.id]
+module nosqlUserAssignment '../core/database/cosmos-db/nosql/role/assignment.bicep' = if (!empty(userPrincipalId)) {
+  name: 'nosql-role-assignment-user'
+  params: {
+    targetAccountName: database.name // Existing account
+    roleDefinitionId: nosqlDefinition.outputs.id // New role definition
+    principalId: userPrincipalId ?? '' // Principal to assign role
+  }
+}
 
+module registryAppAssignment '../core/security/role/assignment.bicep' = if (!empty(appPrincipalId)) {
+  name: 'container-registry-role-assignment-pull-app'
+  params: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull built-in role
+    principalId: appPrincipalId // Principal to assign role
+    principalType: 'ServicePrincipal' // Named principals created with deployment
+  }
+}
+
+module registryUserAssignment '../core/security/role/assignment.bicep' = if (!empty(userPrincipalId)) {
+  name: 'container-registry-role-assignment-push-user'
+  params: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '8311e382-0749-4cb8-b61a-304f252e45ec') // AcrPush built-in role
+    principalId: userPrincipalId // Principal to assign role
+    principalType: 'User' // Current deployment user
+  }
+}
+
+output roleDefinitions object = {
+  nosql: nosqlDefinition.outputs.id
+}
+
+output roleAssignments array = union(
+  !empty(appPrincipalId) ? [ nosqlAppAssignment.outputs.id, registryAppAssignment.outputs.id ] : [],
+  !empty(userPrincipalId) ? [ nosqlUserAssignment.outputs.id, registryUserAssignment.outputs.id ] : []
+)

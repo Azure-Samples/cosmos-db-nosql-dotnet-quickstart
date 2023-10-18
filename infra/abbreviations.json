@@ -1,5 +1,7 @@
 {
-  "appServicePlan": "app-service-plan",
-  "appServiceSite": "app-service-site",
-  "cosmosDbAccount": "cosmos-db-nosql"
+  "containerRegistry": "containerreg",
+  "containerAppsEnv": "container-env",
+  "containerAppsApp": "container-app",
+  "cosmosDbAccount": "cosmos-db-nosql",
+  "userAssignedIdentity": "ua-id"
 }

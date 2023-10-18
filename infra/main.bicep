@@ -14,8 +14,9 @@ param principalId string = ''
 
 // Optional parameters
 param cosmosDbAccountName string = ''
-param appServicePlanName string = ''
-param appServiceSiteName string = ''
+param containerRegistryName string = ''
+param containerAppsEnvName string = ''
+param containerAppsAppName string = ''
 
 // serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host
 param serviceName string = 'web'
@@ -43,16 +44,24 @@ module database 'app/database.bicep' = {
   }
 }
 
+module registry 'app/registry.bicep' = {
+  name: 'registry'
+  scope: resourceGroup
+  params: {
+    registryName: !empty(containerRegistryName) ? containerRegistryName : '${abbreviations.containerRegistry}${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
 module web 'app/web.bicep' = {
   name: serviceName
   scope: resourceGroup
-  dependsOn: [
-    database
-  ]
   params: {
-    planName: !empty(appServicePlanName) ? appServicePlanName : '${abbreviations.appServicePlan}-${resourceToken}'
-    siteName: !empty(appServiceSiteName) ? appServiceSiteName : '${abbreviations.appServiceSite}-${resourceToken}'
+    envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
+    appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
     databaseAccountEndpoint: database.outputs.endpoint
+    containerRegistryEndpoint: registry.outputs.endpoint
     location: location
     tags: tags
     serviceTag: serviceName
@@ -62,13 +71,10 @@ module web 'app/web.bicep' = {
 module security 'app/security.bicep' = {
   name: 'security'
   scope: resourceGroup
-  dependsOn: [
-    web
-    database
-  ]
   params: {
     databaseAccountName: database.outputs.accountName
-    principalIds: empty(principalId) ? [ web.outputs.siteManagedIdentityPrincipalId ] : [ principalId, web.outputs.siteManagedIdentityPrincipalId ]
+    appPrincipalId: web.outputs.managedIdentityPrincipalId
+    userPrincipalId: !empty(principalId) ? principalId : null
   }
 }
 
@@ -77,8 +83,13 @@ output AZURE_COSMOS_ENDPOINT string = database.outputs.endpoint
 output AZURE_COSMOS_DATABASE_NAME string = database.outputs.database.name
 output AZURE_COSMOS_CONTAINER_NAMES array = map(database.outputs.containers, c => c.name)
 
+// Container outputs
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
+output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
+
 // Application outputs
 output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
+output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
 
 // Security outputs
-output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.nosqlRoleDefinitionId
+output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql

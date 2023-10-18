@@ -5,4 +5,9 @@ services:
   web:
     project: ./src/web
     language: csharp
-    host: appservice
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: ../
+pipeline:
+  provider: github
