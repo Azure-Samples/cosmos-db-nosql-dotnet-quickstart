@@ -30,7 +30,7 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
     tags: union(tags, {
         'azd-service-name': serviceTag
       })
-    containerImage: 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart' // Pre-built container image from GitHub
+    containerImage: 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart:main' // Pre-built container image and tag from GitHub
     secrets: [
       {
         name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret

@@ -4,6 +4,21 @@ param accountName string
 param location string = resourceGroup().location
 param tags object = {}
 
+var database = {
+  name: 'cosmicworks' // Based on AdventureWorksLT data set
+  autoscale: true // Scale at the database level
+  throughput: 1000 // Enable autoscale with a minimum of 100 RUs and a maximum of 1,000 RUs
+}
+
+var containers = [
+  {
+    name: 'products' // Set of products
+    partitionKeyPaths: [
+      '/category' // Partition on the product category
+    ]
+  }
+]
+
 module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
   name: 'cosmos-db-account'
   params: {
@@ -13,5 +28,35 @@ module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
   }
 }
 
+module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
+  name: 'cosmos-db-database-${database.name}'
+  params: {
+    name: database.name
+    parentAccountName: accountName
+    tags: tags
+    setThroughput: true
+    autoscale: database.autoscale
+    throughput: database.throughput
+  }
+}
+
+module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, _) in containers: {
+  name: 'cosmos-db-container-${container.name}'
+  params: {
+    name: container.name
+    parentAccountName: accountName
+    parentDatabaseName: cosmosDbDatabase.outputs.name
+    tags: tags
+    setThroughput: false
+    partitionKeyPaths: container.partitionKeyPaths
+  }
+}]
+
 output endpoint string = cosmosDbAccount.outputs.endpoint
 output accountName string = cosmosDbAccount.outputs.name
+output database object = {
+  name: cosmosDbDatabase.outputs.name
+}
+output containers array = [for (_, index) in containers: {
+  name: cosmosDbContainers[index].outputs.name
+}]
