@@ -56,13 +56,19 @@ param ingressEnabled bool = true
 @description('Allowed CORS origins.')
 param allowedOrigins string[] = []
 
+type registry = {
+  server: string
+  identity: string
+}
+
+@description('List of private registries. Defaults to an empty list.')
+param privateRegistries registry[] = []
+
 @description('Enable system-assigned managed identity. Defaults to false.')
 param enableSystemAssignedManagedIdentity bool = false
 
 @description('List of user-assigned managed identities. Defaults to an empty array.')
 param userAssignedManagedIdentityIds string[] = []
-
-var identityType = enableSystemAssignedManagedIdentity ? !empty(userAssignedManagedIdentityIds) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned' : !empty(userAssignedManagedIdentityIds) ? 'UserAssigned' : 'None'
 
 resource environment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: parentEnvironmentName
@@ -73,8 +79,8 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
   location: location
   tags: tags
   identity: {
-    type: identityType
-    userAssignedIdentities: toObject(userAssignedManagedIdentityIds, uaid => uaid, uaid => {})
+    type: enableSystemAssignedManagedIdentity ? !empty(userAssignedManagedIdentityIds) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned' : !empty(userAssignedManagedIdentityIds) ? 'UserAssigned' : 'None'
+    userAssignedIdentities: !empty(userAssignedManagedIdentityIds) ? toObject(userAssignedManagedIdentityIds, uaid => uaid, uaid => {}) : null
   }
   properties: {
     environmentId: environment.id
@@ -88,6 +94,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
         }
       } : null
       secrets: secrets
+      registries: privateRegistries
     }
     template: {
       containers: [

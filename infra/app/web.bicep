@@ -9,11 +9,8 @@ param tags object = {}
 @description('Endpoint for Azure Cosmos DB for NoSQL account.')
 param databaseAccountEndpoint string
 
-@description('Unique identifier for user-assigned managed identity.')
-param userAssignedManagedIdentityResourceId string
-
-@description('Name of the container image to deploy')
-param containerImage string = ''
+@description('Endpoint for private container registry.')
+param containerRegistryEndpoint string = ''
 
 module containerAppsEnvironment '../core/host/container-apps/environments/managed.bicep' = {
   name: 'container-apps-env'
@@ -33,7 +30,7 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
     tags: union(tags, {
         'azd-service-name': serviceTag
       })
-    containerImage: !empty(containerImage) ? containerImage : null
+    containerImage: 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart'
     secrets: [
       {
         name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret
@@ -46,11 +43,16 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
         secretRef: 'azure-cosmos-db-nosql-endpoint' // Reference to secret
       }
     ]
-    userAssignedManagedIdentityIds: [
-      userAssignedManagedIdentityResourceId // Associate user-assigned managed identity with this app
-    ]
+    enableSystemAssignedManagedIdentity: true
+    privateRegistries: !empty(containerRegistryEndpoint) ? [
+      {
+        server: containerRegistryEndpoint // Endpoint to Azure Container Registry
+        identity: 'system'
+      }
+    ] : []
   }
 }
 
 output endpoint string = containerAppsApp.outputs.endpoint
 output envName string = containerAppsApp.outputs.name
+output managedIdentityPrincipalId string = containerAppsApp.outputs.systemAssignedManagedIdentityPrincipalId

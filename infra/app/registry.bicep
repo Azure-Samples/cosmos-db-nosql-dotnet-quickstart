@@ -17,5 +17,5 @@ module containerRegistry '../core/host/container-registry/registry.bicep' = {
   }
 }
 
-output registryEndpoint string = containerRegistry.outputs.endpoint
-output registryName string = containerRegistry.outputs.name
+output endpoint string = containerRegistry.outputs.endpoint
+output name string = containerRegistry.outputs.name
