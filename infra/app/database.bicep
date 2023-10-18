@@ -32,7 +32,7 @@ module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
   name: 'cosmos-db-database-${database.name}'
   params: {
     name: database.name
-    parentAccountName: accountName
+    parentAccountName: cosmosDbAccount.outputs.name
     tags: tags
     setThroughput: true
     autoscale: database.autoscale
@@ -44,7 +44,7 @@ module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [
   name: 'cosmos-db-container-${container.name}'
   params: {
     name: container.name
-    parentAccountName: accountName
+    parentAccountName: cosmosDbAccount.outputs.name
     parentDatabaseName: cosmosDbDatabase.outputs.name
     tags: tags
     setThroughput: false
