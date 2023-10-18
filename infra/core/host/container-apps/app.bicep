@@ -58,11 +58,13 @@ param allowedOrigins string[] = []
 
 type registry = {
   server: string
-  identity: string
+  identity: string?
+  username: string?
+  passwordSecretRef: string?
 }
 
-@description('List of private registries. Defaults to an empty list.')
-param privateRegistries registry[] = []
+@description('List of registries. Defaults to an empty list.')
+param registries registry[] = []
 
 @description('Enable system-assigned managed identity. Defaults to false.')
 param enableSystemAssignedManagedIdentity bool = false
@@ -94,7 +96,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
         }
       } : null
       secrets: secrets
-      registries: privateRegistries
+      registries: !empty(registries) ? registries : null
     }
     template: {
       containers: [

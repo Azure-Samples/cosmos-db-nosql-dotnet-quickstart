@@ -43,15 +43,6 @@ module nosqlUserAssignment '../core/database/cosmos-db/nosql/role/assignment.bic
   }
 }
 
-module registryAppAssignment '../core/security/role/assignment.bicep' = if (!empty(appPrincipalId)) {
-  name: 'container-registry-role-assignment-pull-app'
-  params: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d') // AcrPull built-in role
-    principalId: appPrincipalId // Principal to assign role
-    principalType: 'ServicePrincipal' // Named principals created with deployment
-  }
-}
-
 module registryUserAssignment '../core/security/role/assignment.bicep' = if (!empty(userPrincipalId)) {
   name: 'container-registry-role-assignment-push-user'
   params: {
@@ -66,6 +57,6 @@ output roleDefinitions object = {
 }
 
 output roleAssignments array = union(
-  !empty(appPrincipalId) ? [ nosqlAppAssignment.outputs.id, registryAppAssignment.outputs.id ] : [],
+  !empty(appPrincipalId) ? [ nosqlAppAssignment.outputs.id ] : [],
   !empty(userPrincipalId) ? [ nosqlUserAssignment.outputs.id, registryUserAssignment.outputs.id ] : []
 )

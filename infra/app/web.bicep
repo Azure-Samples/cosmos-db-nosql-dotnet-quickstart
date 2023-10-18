@@ -10,7 +10,7 @@ param tags object = {}
 param databaseAccountEndpoint string
 
 @description('Endpoint for private container registry.')
-param containerRegistryEndpoint string = ''
+param containerRegistryEndpoint string
 
 module containerAppsEnvironment '../core/host/container-apps/environments/managed.bicep' = {
   name: 'container-apps-env'
@@ -30,7 +30,6 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
     tags: union(tags, {
         'azd-service-name': serviceTag
       })
-    containerImage: 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart:main' // Pre-built container image and tag from GitHub
     secrets: [
       {
         name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret
@@ -44,12 +43,7 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
       }
     ]
     enableSystemAssignedManagedIdentity: true
-    privateRegistries: !empty(containerRegistryEndpoint) ? [
-      {
-        server: containerRegistryEndpoint // Endpoint to Azure Container Registry
-        identity: 'system'
-      }
-    ] : []
+    containerImage: 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart:main' // Pre-built container image and tag from GitHub
   }
 }
 
