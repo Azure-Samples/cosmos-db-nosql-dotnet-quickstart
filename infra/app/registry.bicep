@@ -11,9 +11,9 @@ module containerRegistry '../core/host/container-registry/registry.bicep' = {
     location: location
     tags: tags
     adminUserEnabled: false
-    anonymousPullEnabled: false
+    anonymousPullEnabled: true
     publicNetworkAccessEnabled: true
-    skuName: 'Basic'
+    skuName: 'Standard'
   }
 }
 

@@ -44,6 +44,15 @@ module database 'app/database.bicep' = {
   }
 }
 
+module data 'app/data.bicep' = {
+  name: 'data'
+  scope: resourceGroup
+  params: {
+    databaseAccountName: database.outputs.accountName
+    tags: tags
+  }
+}
+
 module registry 'app/registry.bicep' = {
   name: 'registry'
   scope: resourceGroup
@@ -80,8 +89,8 @@ module security 'app/security.bicep' = {
 
 // Database outputs
 output AZURE_COSMOS_ENDPOINT string = database.outputs.endpoint
-output AZURE_COSMOS_DATABASE_NAME string = database.outputs.database.name
-output AZURE_COSMOS_CONTAINER_NAMES array = map(database.outputs.containers, c => c.name)
+output AZURE_COSMOS_DATABASE_NAME string = data.outputs.database.name
+output AZURE_COSMOS_CONTAINER_NAMES array = map(data.outputs.containers, c => c.name)
 
 // Container outputs
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
