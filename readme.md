@@ -38,7 +38,9 @@ azd up
 
 This application utilizes the following Azure resources:
 
-- [**Azure App Services**](https://learn.microsoft.com/azure/app-service/)
+- [**Azure Container Registry**](https://learn.microsoft.com/azure/container-registry/)
+    - This services hosts the container image.
+- [**Azure Container Apps**](https://learn.microsoft.com/azure/container-apps/)
     - This service hosts the ASP.NET Blazor web application.
 - [**Azure Cosmos DB for NoSQL**](https://learn.microsoft.com/azure/cosmos-db/) 
     - This service stores the NoSQL data.
@@ -48,7 +50,7 @@ Here's a high level architecture diagram that illustrates these components. Noti
 ```mermaid
 %%{ init: { 'theme': 'base', 'themeVariables': { 'background': '#243A5E', 'primaryColor': '#50E6FF', 'primaryBorderColor': '#243A5E', 'tertiaryBorderColor': '#50E6FF', 'tertiaryColor': '#243A5E', 'fontFamily': 'Segoe UI', 'lineColor': '#FFFFFF', 'primaryTextColor': '#243A5E', 'tertiaryTextColor': '#FFFFFF' } }}%%
 flowchart TB
-    subgraph app-service[Azure App Service]
+    subgraph web-app[Azure Container Apps]
         app-framework([.NET 7 - Blazor])
     end
     subgraph cosmos-db[Azure Cosmos DB]
@@ -59,7 +61,7 @@ flowchart TB
             end
         end
     end
-    app-service --> cosmos-db
+    web-app --> cosmos-db
 ```
 
 ### Cost of provisioning and deploying this template

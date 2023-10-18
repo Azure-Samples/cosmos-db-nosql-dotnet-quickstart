@@ -14,8 +14,10 @@ param principalId string = ''
 
 // Optional parameters
 param cosmosDbAccountName string = ''
-param appServicePlanName string = ''
-param appServiceSiteName string = ''
+param containerRegistryName string = ''
+param containerAppsEnvName string = ''
+param containerAppsAppName string = ''
+param userAssignedIdentityName string = ''
 
 // serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host
 param serviceName string = 'web'
@@ -33,7 +35,17 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   tags: tags
 }
 
-module database 'app/database.bicep' = {
+module identity 'app/identity.bicep' = {
+  name: 'identity'
+  scope: resourceGroup
+  params: {
+    identityName: !empty(userAssignedIdentityName) ? userAssignedIdentityName : '${abbreviations.userAssignedIdentity}-${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
+module account 'app/database.bicep' = {
   name: 'database'
   scope: resourceGroup
   params: {
@@ -43,13 +55,33 @@ module database 'app/database.bicep' = {
   }
 }
 
+module resources 'app/data.bicep' = {
+  name: 'data'
+  scope: resourceGroup
+  params: {
+    accountName: account.outputs.accountName
+    tags: tags
+  }
+}
+
+module container 'app/registry.bicep' = {
+  name: 'registry'
+  scope: resourceGroup
+  params: {
+    registryName: !empty(containerRegistryName) ? containerRegistryName : '${abbreviations.containerRegistry}${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
 module web 'app/web.bicep' = {
   name: serviceName
   scope: resourceGroup
   params: {
-    planName: !empty(appServicePlanName) ? appServicePlanName : '${abbreviations.appServicePlan}-${resourceToken}'
-    siteName: !empty(appServiceSiteName) ? appServiceSiteName : '${abbreviations.appServiceSite}-${resourceToken}'
-    databaseAccountEndpoint: database.outputs.endpoint
+    envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
+    appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
+    databaseAccountEndpoint: account.outputs.endpoint
+    userAssignedManagedIdentityId: identity.outputs.identityId
     location: location
     tags: tags
     serviceTag: serviceName
@@ -60,18 +92,26 @@ module security 'app/security.bicep' = {
   name: 'security'
   scope: resourceGroup
   params: {
-    databaseAccountName: database.outputs.accountName
-    principalIds: empty(principalId) ? [ web.outputs.siteManagedIdentityPrincipalId ] : [ principalId, web.outputs.siteManagedIdentityPrincipalId ]
+    databaseAccountName: account.outputs.accountName
+    principalIds: union([ identity.outputs.identityId ], empty(principalId) ? [] : [ principalId ])
   }
 }
 
 // Database outputs
-output AZURE_COSMOS_ENDPOINT string = database.outputs.endpoint
-output AZURE_COSMOS_DATABASE_NAME string = database.outputs.database.name
-output AZURE_COSMOS_CONTAINER_NAMES array = map(database.outputs.containers, c => c.name)
+output AZURE_COSMOS_ENDPOINT string = account.outputs.endpoint
+output AZURE_COSMOS_DATABASE_NAME string = resources.outputs.database.name
+output AZURE_COSMOS_CONTAINER_NAMES array = map(resources.outputs.containers, c => c.name)
+
+// Container outputs
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = container.outputs.registryEndpoint
+output AZURE_CONTAINER_REGISTRY_NAME string = container.outputs.registryName
 
 // Application outputs
 output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
+output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
+
+// Identity outputs
+output AZURE_USER_ASSIGNED_IDENTITY_ID string = identity.outputs.identityId
 
 // Security outputs
 output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.nosqlRoleDefinitionId

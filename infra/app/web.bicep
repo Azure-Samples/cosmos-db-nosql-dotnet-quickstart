@@ -1,7 +1,7 @@
-metadata description = 'Create Azure App Service resources.'
+metadata description = 'Create web application resources.'
 
-param planName string
-param siteName string
+param envName string
+param appName string
 param serviceTag string
 param location string = resourceGroup().location
 param tags object = {}
@@ -9,28 +9,31 @@ param tags object = {}
 @description('Endpoint for Azure Cosmos DB for NoSQL account.')
 param databaseAccountEndpoint string
 
-@description('Name of the container image to deploy')
-param containerImage string = 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart:main'
+@description('Unique identifier for user-assigned managed identity.')
+param userAssignedManagedIdentityId string
 
-module containerAppsEnvironment '../core/web/container-apps/environments/managed.bicep' = {
+@description('Name of the container image to deploy')
+param containerImage string = ''
+
+module containerAppsEnvironment '../core/host/container-apps/environments/managed.bicep' = {
   name: 'container-apps-env'
   params: {
-    name: planName
+    name: envName
     location: location
     tags: tags
   }
 }
 
-module containerAppsApp '../core/web/container-apps/app.bicep' = {
+module containerAppsApp '../core/host/container-apps/app.bicep' = {
   name: 'container-apps-app'
   params: {
-    name: siteName
+    name: appName
     parentEnvironmentName: containerAppsEnvironment.outputs.name
     location: location
     tags: union(tags, {
         'azd-service-name': serviceTag
       })
-    containerImage: containerImage // Use container image from GitHub
+    containerImage: !empty(containerImage) ? containerImage : null
     secrets: [
       {
         name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret
@@ -43,10 +46,11 @@ module containerAppsApp '../core/web/container-apps/app.bicep' = {
         secretRef: 'azure-cosmos-db-nosql-endpoint' // Reference to secret
       }
     ]
-    enableSystemAssignedManagedIdentity: true // Create system-assigned managed identity
+    userAssignedManagedIdentityIds: [
+      userAssignedManagedIdentityId // Associate user-assigned managed identity with this app
+    ]
   }
 }
 
 output endpoint string = containerAppsApp.outputs.endpoint
-output siteName string = containerAppsApp.outputs.name
-output siteManagedIdentityPrincipalId string = containerAppsApp.outputs.managedIdentityPrincipalId
+output envName string = containerAppsApp.outputs.name

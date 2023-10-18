@@ -1,4 +1,4 @@
-metadata description = 'Create identity resources for Azure Cosmos DB and Azure App Service.'
+metadata description = 'Create role assignment and definition resources.'
 
 param databaseAccountName string
 

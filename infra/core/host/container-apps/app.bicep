@@ -7,9 +7,6 @@ param tags object = {}
 @description('Name of the parent environment for the app.')
 param parentEnvironmentName string
 
-@description('Enable system-assigned managed identity. Defaults to false.')
-param enableSystemAssignedManagedIdentity bool = false
-
 @description('Specifies the docker container image to deploy.')
 param containerImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
@@ -46,6 +43,14 @@ param ingressEnabled bool = true
 @description('Allowed CORS origins.')
 param allowedOrigins array = []
 
+@description('Enable system-assigned managed identity. Defaults to false.')
+param enableSystemAssignedManagedIdentity bool = false
+
+@description('List of user-assigned managed identities. Defaults to an empty array.')
+param userAssignedManagedIdentityIds array = []
+
+var identityType = enableSystemAssignedManagedIdentity ? !empty(userAssignedManagedIdentityIds) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned' : !empty(userAssignedManagedIdentityIds) ? 'UserAssigned' : 'None'
+
 resource environment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: parentEnvironmentName
 }
@@ -54,9 +59,10 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
   name: name
   location: location
   tags: tags
-  identity: enableSystemAssignedManagedIdentity ? {
-    type: 'SystemAssigned'
-  } : null
+  identity: {
+    type: identityType
+    userAssignedIdentities: toObject(userAssignedManagedIdentityIds, uaid => uaid, uaid => {})
+  }
   properties: {
     environmentId: environment.id
     configuration: {
@@ -92,4 +98,4 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
 
 output endpoint string = ingressEnabled ? 'https://${app.properties.configuration.ingress.fqdn}' : ''
 output name string = app.name
-output managedIdentityPrincipalId string = enableSystemAssignedManagedIdentity ? app.identity.principalId : ''
+output systemAssignedManagedIdentityPrincipalId string = enableSystemAssignedManagedIdentity ? app.identity.principalId : ''
