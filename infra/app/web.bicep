@@ -10,7 +10,7 @@ param tags object = {}
 param databaseAccountEndpoint string
 
 @description('Unique identifier for user-assigned managed identity.')
-param userAssignedManagedIdentityId string
+param userAssignedManagedIdentityResourceId string
 
 @description('Name of the container image to deploy')
 param containerImage string = ''
@@ -47,7 +47,7 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
       }
     ]
     userAssignedManagedIdentityIds: [
-      userAssignedManagedIdentityId // Associate user-assigned managed identity with this app
+      userAssignedManagedIdentityResourceId // Associate user-assigned managed identity with this app
     ]
   }
 }

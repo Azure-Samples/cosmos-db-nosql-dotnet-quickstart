@@ -28,11 +28,24 @@ param minReplicas int = 1
 @minValue(1)
 param maxReplicas int = 1
 
+type envVar = {
+  name: string
+  secretRef: string?
+  value: string?
+}
+
 @description('The environment variables for the container.')
-param environmentVariables array = []
+param environmentVariables envVar[] = []
+
+type secret = {
+  name: string
+  identity: string?
+  keyVaultUrl: string?
+  value: string?
+}
 
 @description('The secrets required for the container')
-param secrets array = []
+param secrets secret[] = []
 
 @description('Specifies if the resource ingress is exposed externally.')
 param externalAccess bool = true
@@ -41,13 +54,13 @@ param externalAccess bool = true
 param ingressEnabled bool = true
 
 @description('Allowed CORS origins.')
-param allowedOrigins array = []
+param allowedOrigins string[] = []
 
 @description('Enable system-assigned managed identity. Defaults to false.')
 param enableSystemAssignedManagedIdentity bool = false
 
 @description('List of user-assigned managed identities. Defaults to an empty array.')
-param userAssignedManagedIdentityIds array = []
+param userAssignedManagedIdentityIds string[] = []
 
 var identityType = enableSystemAssignedManagedIdentity ? !empty(userAssignedManagedIdentityIds) ? 'SystemAssigned,UserAssigned' : 'SystemAssigned' : !empty(userAssignedManagedIdentityIds) ? 'UserAssigned' : 'None'
 

@@ -81,7 +81,7 @@ module web 'app/web.bicep' = {
     envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
     appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
     databaseAccountEndpoint: account.outputs.endpoint
-    userAssignedManagedIdentityId: identity.outputs.identityId
+    userAssignedManagedIdentityResourceId: identity.outputs.identityResourceId
     location: location
     tags: tags
     serviceTag: serviceName
@@ -93,7 +93,17 @@ module security 'app/security.bicep' = {
   scope: resourceGroup
   params: {
     databaseAccountName: account.outputs.accountName
-    principalIds: union([ identity.outputs.identityId ], empty(principalId) ? [] : [ principalId ])
+    principals: union([
+        {
+          name: identity.outputs.identityName
+          principalId: identity.outputs.identityPrincipalId
+        }
+      ], empty(principalId) ? [] : [
+        {
+          name: 'deployment-user'
+          principalId: principalId
+        }
+      ])
   }
 }
 
@@ -111,7 +121,7 @@ output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
 output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
 
 // Identity outputs
-output AZURE_USER_ASSIGNED_IDENTITY_ID string = identity.outputs.identityId
+output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.identityName
 
 // Security outputs
 output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.nosqlRoleDefinitionId

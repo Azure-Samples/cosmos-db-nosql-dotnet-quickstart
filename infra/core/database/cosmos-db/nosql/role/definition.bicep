@@ -7,10 +7,10 @@ param targetAccountName string
 param definitionName string
 
 @description('An array of data actions that are allowed. Defaults to an empty array.')
-param permissionsDataActions array = []
+param permissionsDataActions string[] = []
 
 @description('An array of data actions that are denied. Defaults to an empty array.')
-param permissionsNonDataActions array = []
+param permissionsNonDataActions string[] = []
 
 resource account 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
   name: targetAccountName

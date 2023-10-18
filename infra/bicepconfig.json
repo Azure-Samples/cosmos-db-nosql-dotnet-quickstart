@@ -1,5 +1,6 @@
 {
   "experimentalFeaturesEnabled": {
-    "resourceTypedParamsAndOutputs": true
+    "resourceTypedParamsAndOutputs": true,
+    "userDefinedTypes": true
   }
 }

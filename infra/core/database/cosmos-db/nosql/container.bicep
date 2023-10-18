@@ -19,7 +19,7 @@ param autoscale bool = false
 param throughput int = 400
 
 @description('List of hierarhical partition key paths. Defaults to an array that only contains /id.')
-param partitionKeyPaths array = [
+param partitionKeyPaths string[] = [
   '/id'
 ]
 

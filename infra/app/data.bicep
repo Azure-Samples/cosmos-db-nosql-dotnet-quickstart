@@ -3,13 +3,24 @@ metadata description = 'Create database sub-resources.'
 param accountName string
 param tags object = {}
 
-param database object = {
+type database = {
+  name: string
+  autoscale: bool
+  throughput: int
+}
+
+param rootDatabase database = {
   name: 'cosmicworks' // Based on AdventureWorksLT data set
   autoscale: true // Scale at the database level
   throughput: 1000 // Enable autoscale with a minimum of 100 RUs and a maximum of 1,000 RUs
 }
 
-param containers array = [
+type container = {
+  name: string
+  partitionKeyPaths: string[]
+}
+
+param containers container[] = [
   {
     name: 'products' // Set of products
     partitionKeyPaths: [
@@ -19,19 +30,19 @@ param containers array = [
 ]
 
 module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
-  name: 'cosmos-db-database'
+  name: 'cosmos-db-database-${rootDatabase.name}'
   params: {
-    name: database.name
+    name: rootDatabase.name
     parentAccountName: accountName
     tags: tags
     setThroughput: true
-    autoscale: database.autoscale
-    throughput: database.throughput
+    autoscale: rootDatabase.autoscale
+    throughput: rootDatabase.throughput
   }
 }
 
-module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, index) in containers: {
-  name: 'cosmos-db-container-${index}'
+module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, _) in containers: {
+  name: 'cosmos-db-container-${container.name}'
   params: {
     name: container.name
     parentAccountName: accountName
