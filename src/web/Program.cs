@@ -5,16 +5,37 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddSingleton<CosmosClient>((_) =>
+if (builder.Environment.IsDevelopment())
 {
-    // <create_client>
-    CosmosClient client = new(
-        accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
-        tokenCredential: new DefaultAzureCredential()
-    );
-    // </create_client>
-    return client;
-});
+    builder.Services.AddSingleton<CosmosClient>((_) =>
+    {
+        // <create_client>
+        CosmosClient client = new(
+            accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
+            tokenCredential: new DefaultAzureCredential()
+        );
+        // </create_client>
+        return client;
+    });
+}
+else
+{
+    builder.Services.AddSingleton<CosmosClient>((_) =>
+    {
+        // <create_client_client_id>
+        CosmosClient client = new(
+            accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
+            tokenCredential: new DefaultAzureCredential(
+                new DefaultAzureCredentialOptions()
+                {
+                    ManagedIdentityClientId = builder.Configuration["AZURE_MANAGED_IDENTITY_CLIENT_ID"]!
+                }
+            )
+        );
+        // </create_client_client_id>
+        return client;
+    });
+}
 
 var app = builder.Build();
 

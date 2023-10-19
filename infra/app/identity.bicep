@@ -16,3 +16,4 @@ module userAssignedIdentity '../core/security/identity/user-assigned.bicep' = {
 output name string = userAssignedIdentity.outputs.name
 output resourceId string = userAssignedIdentity.outputs.resourceId
 output principalId string = userAssignedIdentity.outputs.principalId
+output clientId string = userAssignedIdentity.outputs.clientId
