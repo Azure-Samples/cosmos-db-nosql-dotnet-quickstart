@@ -17,6 +17,7 @@ param cosmosDbAccountName string = ''
 param containerRegistryName string = ''
 param containerAppsEnvName string = ''
 param containerAppsAppName string = ''
+param userAssignedIdentityName string = ''
 
 // serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host
 param serviceName string = 'web'
@@ -32,6 +33,16 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: environmentName
   location: location
   tags: tags
+}
+
+module identity 'app/identity.bicep' = {
+  name: 'identity'
+  scope: resourceGroup
+  params: {
+    identityName: !empty(userAssignedIdentityName) ? userAssignedIdentityName : '${abbreviations.userAssignedIdentity}-${resourceToken}'
+    location: location
+    tags: tags
+  }
 }
 
 module database 'app/database.bicep' = {
@@ -70,7 +81,10 @@ module web 'app/web.bicep' = {
     envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
     appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
     databaseAccountEndpoint: database.outputs.endpoint
-    containerRegistryEndpoint: registry.outputs.endpoint
+    userAssignedManagedIdentity: {
+      resourceId: identity.outputs.resourceId
+      clientId: identity.outputs.clientId
+    }
     location: location
     tags: tags
     serviceTag: serviceName
@@ -82,7 +96,7 @@ module security 'app/security.bicep' = {
   scope: resourceGroup
   params: {
     databaseAccountName: database.outputs.accountName
-    appPrincipalId: web.outputs.managedIdentityPrincipalId
+    appPrincipalId: identity.outputs.principalId
     userPrincipalId: !empty(principalId) ? principalId : null
   }
 }
@@ -99,6 +113,9 @@ output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
 // Application outputs
 output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
 output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
+
+// Identity outputs
+output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.name
 
 // Security outputs
 output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql
