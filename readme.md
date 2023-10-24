@@ -15,7 +15,7 @@ When you are finished, you will have a fully functional web application deployed
 The following prerequisites are required to use this application. Please ensure that you have them all installed locally.
 
 - [Azure Developer CLI](https://aka.ms/azd-install)
-- [.NET SDK 7.0](https://dotnet.microsoft.com/download/dotnet/7.0) 
+- [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) 
 
 ### Quickstart
 
