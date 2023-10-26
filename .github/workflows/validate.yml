@@ -1,4 +1,4 @@
-name: Validate template
+name: Validate .NET solution
 on:
   schedule:
     - cron: '0 0 * * 2'
