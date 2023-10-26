@@ -1,5 +1,5 @@
-name: Validate .NET solution
-on:
+name: Validate template
+teon:
   schedule:
     - cron: '0 0 * * 2'
   workflow_dispatch:
