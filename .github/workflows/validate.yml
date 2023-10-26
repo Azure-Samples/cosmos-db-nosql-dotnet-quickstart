@@ -1,4 +1,5 @@
-on:  
+name: Validate .NET solution
+on:
   schedule:
     - cron: '0 0 * * 2'
   workflow_dispatch:
@@ -8,6 +9,7 @@ on:
       - main
 jobs:
   validate-dotnet:
+    name: Validate .NET solution
     uses: azure-samples/code-validation/.github/workflows/dotnet.yml@main
     with:
       version: '8.0'
