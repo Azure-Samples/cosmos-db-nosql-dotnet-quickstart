@@ -119,3 +119,6 @@ output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.name
 
 // Security outputs
 output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql
+
+// Application environment variables
+output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint

@@ -1,6 +1,6 @@
 # Quickstart: Azure Cosmos DB for NoSQL client library for .NET
 
-This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos) and the [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity) libraries from NuGet. Modify the source code and leverage the Infrastructure as Code (IaC) Bicep assets to get up and running quickly.
+This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos) and  [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity) libraries from NuGet. Modify the source code and leverage the Infrastructure as Code (IaC) Bicep assets to get up and running quickly.
 
 When you are finished, you will have a fully functional web application deployed to Azure.
 
@@ -19,7 +19,7 @@ The following prerequisites are required to use this application. Please ensure 
 
 ### Quickstart
 
-To learn how to get started with any template, follow the steps in [this quickstart] with this template (``).
+To learn how to get started with any template, follow the steps in [this quickstart](https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet) with this template (`cosmos-db-nosql-dotnet-quickstart`).
 
 This quickstart will show you how to authenticate on Azure, initialize using a template, provision infrastructure and deploy code on Azure via the following commands:
 
@@ -27,7 +27,8 @@ This quickstart will show you how to authenticate on Azure, initialize using a t
 # Log in to azd. Only required once per-install.
 azd auth login
 
-# First-time project setup. Initialize a project in the current directory, using this template. 
+# First-time project setup. Initialize a project in the current directory, using this template.
+# Omit the --template argument if you are running in a development container.
 azd init --template cosmos-db-nosql-dotnet-quickstart
 
 # Provision and deploy to Azure
@@ -51,7 +52,7 @@ Here's a high level architecture diagram that illustrates these components. Noti
 %%{ init: { 'theme': 'base', 'themeVariables': { 'background': '#243A5E', 'primaryColor': '#50E6FF', 'primaryBorderColor': '#243A5E', 'tertiaryBorderColor': '#50E6FF', 'tertiaryColor': '#243A5E', 'fontFamily': 'Segoe UI', 'lineColor': '#FFFFFF', 'primaryTextColor': '#243A5E', 'tertiaryTextColor': '#FFFFFF' } }}%%
 flowchart TB
     subgraph web-app[Azure Container Apps]
-        app-framework([.NET 7 - Blazor])
+        app-framework([.NET 8 - Blazor])
     end
     subgraph cosmos-db[Azure Cosmos DB]
         subgraph database-cosmicworks[Database: cosmicworks]
