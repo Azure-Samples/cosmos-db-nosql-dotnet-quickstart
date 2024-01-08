@@ -10,19 +10,19 @@ internal interface ICosmosDbService
 
 internal sealed class CosmosDbService : ICosmosDbService
 {
-    private readonly CosmosClient _client;
+    private readonly CosmosClient client;
 
     public CosmosDbService(CosmosClient client)
     {
-        this._client = client;
+        this.client = client;
     }
 
-    public string GetEndpoint() => $"{this._client.Endpoint}";
+    public string GetEndpoint() => $"{client.Endpoint}";
 
     public async Task RunDemoAsync(Func<string, Task> writeOutputAync)
     {
         // <get_database>
-        Database database = this._client.GetDatabase("cosmicworks");
+        Database database = client.GetDatabase("cosmicworks");
         // </get_database>
         database = await database.ReadAsync();
         await writeOutputAync($"Get database:\t{database.Id}");
