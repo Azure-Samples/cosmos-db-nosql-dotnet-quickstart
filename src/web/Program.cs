@@ -37,6 +37,8 @@ else
     });
 }
 
+builder.Services.AddTransient<ICosmosDbService, CosmosDbService>();
+
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
