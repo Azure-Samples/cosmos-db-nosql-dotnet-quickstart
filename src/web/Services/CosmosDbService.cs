@@ -17,7 +17,7 @@ internal sealed class CosmosDbService : ICosmosDbService
         this.client = client;
     }
 
-    public string GetEndpoint() => $"{this._client.Endpoint}";
+    public string GetEndpoint() => $"{client.Endpoint}";
 
     public async Task RunDemoAsync(Func<string, Task> writeOutputAync)
     {
