@@ -60,7 +60,6 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
     userAssignedManagedIdentityIds: [
       userAssignedManagedIdentity.resourceId
     ]
-    containerImage: 'ghcr.io/azure-samples/cosmos-db-nosql-dotnet-quickstart:main' // Pre-built container image and tag from GitHub
   }
 }
 
