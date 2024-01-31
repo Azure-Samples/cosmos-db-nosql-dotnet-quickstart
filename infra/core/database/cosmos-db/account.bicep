@@ -11,8 +11,11 @@ param kind string
 @description('Enables serverless for this account. Defaults to false.')
 param enableServerless bool = false
 
-@description('Disables key-based authentication. Defaults to false.')
-param disableKeyBasedAuth bool = false
+@description('Disables key-based authentication to the data plane. Defaults to false.')
+param disableKeyBasedDataPlaneAuth bool = false
+
+@description('Disables key-based authentication to the control plane. Defaults to false.')
+param disableKeyBasedControlPlaneAuth bool = false
 
 resource account 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
   name: name
@@ -36,7 +39,8 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
     apiProperties: (kind == 'MongoDB') ? {
       serverVersion: '4.2'
     } : {}
-    disableLocalAuth: disableKeyBasedAuth
+    disableLocalAuth: disableKeyBasedDataPlaneAuth
+    disableKeyBasedMetadataWriteAccess: disableKeyBasedControlPlaneAuth
     capabilities: (enableServerless) ? [
       {
         name: 'EnableServerless'

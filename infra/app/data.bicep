@@ -1,50 +1,32 @@
-metadata description = 'Create database account resources.'
+metadata description = 'Runs deployment scripts to seed database data.'
 
-param databaseAccountName string
+param deploymentScriptName string
+param location string = resourceGroup().location
 param tags object = {}
 
-var database = {
-  name: 'cosmicworks' // Based on AdventureWorksLT data set
-  autoscale: true // Scale at the database level
-  throughput: 1000 // Enable autoscale with a minimum of 100 RUs and a maximum of 1,000 RUs
+param databaseAccountName string
+
+resource database 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' existing = {
+  name: databaseAccountName
 }
 
-var containers = [
-  {
-    name: 'products' // Set of products
-    partitionKeyPaths: [
-      '/category' // Partition on the product category
+module deploymentScript '../core/automation/deploymentScript/ps.bicep' = {
+  name: 'ps-deployment-script'
+  params: {
+    name: deploymentScriptName
+    location: location
+    tags: tags
+    scriptContent: '''
+      apt-get update
+      apt-get install -y dotnet-sdk-7.0
+      dotnet tool install cosmicworks --tool-path ~/dotnet-tool --prerelease
+      ~/dotnet-tool/cosmicworks --disable-formatting --hide-credentials --number-of-employees 0 --connection-string ${Env:COSMOS_DB_CONNECTION_STRING}
+    '''
+    envVariables: [
+      {
+        name: 'COSMOS_DB_CONNECTION_STRING'
+        secureValue: database.listConnectionStrings().connectionStrings[0].connectionString
+      }
     ]
   }
-]
-
-module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
-  name: 'cosmos-db-database-${database.name}'
-  params: {
-    name: database.name
-    parentAccountName: databaseAccountName
-    tags: tags
-    setThroughput: true
-    autoscale: database.autoscale
-    throughput: database.throughput
-  }
 }
-
-module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, _) in containers: {
-  name: 'cosmos-db-container-${container.name}'
-  params: {
-    name: container.name
-    parentAccountName: databaseAccountName
-    parentDatabaseName: cosmosDbDatabase.outputs.name
-    tags: tags
-    setThroughput: false
-    partitionKeyPaths: container.partitionKeyPaths
-  }
-}]
-
-output database object = {
-  name: cosmosDbDatabase.outputs.name
-}
-output containers array = [for (_, index) in containers: {
-  name: cosmosDbContainers[index].outputs.name
-}]

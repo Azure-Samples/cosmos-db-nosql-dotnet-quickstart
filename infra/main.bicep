@@ -18,9 +18,13 @@ param containerRegistryName string = ''
 param containerAppsEnvName string = ''
 param containerAppsAppName string = ''
 param userAssignedIdentityName string = ''
+param deploymentScriptName string = ''
 
-// serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host
-param serviceName string = 'web'
+@description('Web serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host.')
+param webServiceName string = 'web'
+
+@description('API serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host.')
+param apiServiceName string = 'api'
 
 var abbreviations = loadJsonContent('abbreviations.json')
 var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
@@ -59,7 +63,9 @@ module data 'app/data.bicep' = {
   name: 'data'
   scope: resourceGroup
   params: {
+    deploymentScriptName: !empty(deploymentScriptName) ? deploymentScriptName : '${abbreviations.deploymentScript}-${resourceToken}'
     databaseAccountName: database.outputs.accountName
+    location: location
     tags: tags
   }
 }
@@ -75,11 +81,12 @@ module registry 'app/registry.bicep' = {
 }
 
 module web 'app/web.bicep' = {
-  name: serviceName
+  name: webServiceName
   scope: resourceGroup
   params: {
     envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
-    appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
+    webAppName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-web-${resourceToken}'
+    apiAppName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-api-${resourceToken}'
     databaseAccountEndpoint: database.outputs.endpoint
     userAssignedManagedIdentity: {
       resourceId: identity.outputs.resourceId
@@ -87,7 +94,8 @@ module web 'app/web.bicep' = {
     }
     location: location
     tags: tags
-    serviceTag: serviceName
+    webServiceTag: webServiceName
+    apiServiceTag: apiServiceName
   }
 }
 
@@ -103,8 +111,8 @@ module security 'app/security.bicep' = {
 
 // Database outputs
 output AZURE_COSMOS_ENDPOINT string = database.outputs.endpoint
-output AZURE_COSMOS_DATABASE_NAME string = data.outputs.database.name
-output AZURE_COSMOS_CONTAINER_NAMES array = map(data.outputs.containers, c => c.name)
+output AZURE_COSMOS_DATABASE_NAME string = database.outputs.database.name
+output AZURE_COSMOS_CONTAINER_NAMES array = map(database.outputs.containers, c => c.name)
 
 // Container outputs
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
@@ -121,4 +129,6 @@ output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.name
 output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql
 
 // Application environment variables
-output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint
+output COSMOS_DB_ENDPOINT string = database.outputs.endpoint
+output COSMOS_DB_DATABASE string = database.outputs.database.name
+output COSMOS_DB_CONTAINER string = database.outputs.containers[0].name

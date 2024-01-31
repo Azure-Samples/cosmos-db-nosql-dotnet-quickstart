@@ -1,43 +1,17 @@
-using Azure.Identity;
-using Microsoft.Azure.Cosmos;
+using Cosmos.Samples.NoSQL.Quickstart.Web.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-if (builder.Environment.IsDevelopment())
+builder.Services.AddSingleton((_) => new Endpoints
 {
-    builder.Services.AddSingleton<CosmosClient>((_) =>
-    {
-        // <create_client>
-        CosmosClient client = new(
-            accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
-            tokenCredential: new DefaultAzureCredential()
-        );
-        // </create_client>
-        return client;
-    });
-}
-else
-{
-    builder.Services.AddSingleton<CosmosClient>((_) =>
-    {
-        // <create_client_client_id>
-        CosmosClient client = new(
-            accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
-            tokenCredential: new DefaultAzureCredential(
-                new DefaultAzureCredentialOptions()
-                {
-                    ManagedIdentityClientId = builder.Configuration["AZURE_MANAGED_IDENTITY_CLIENT_ID"]!
-                }
-            )
-        );
-        // </create_client_client_id>
-        return client;
-    });
-}
+    BaseApi = builder.Configuration["BASE_API_ENDPOINT"]
+});
 
-builder.Services.AddTransient<ICosmosDbService, CosmosDbService>();
+builder.Services.AddTransient<IDataApiService, DataApiService>();
 
 var app = builder.Build();
 

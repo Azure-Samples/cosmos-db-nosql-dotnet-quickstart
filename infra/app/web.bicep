@@ -1,8 +1,10 @@
 metadata description = 'Create web application resources.'
 
 param envName string
-param appName string
-param serviceTag string
+param webAppName string
+param webServiceTag string
+param apiAppName string
+param apiServiceTag string
 param location string = resourceGroup().location
 param tags object = {}
 
@@ -26,14 +28,14 @@ module containerAppsEnvironment '../core/host/container-apps/environments/manage
   }
 }
 
-module containerAppsApp '../core/host/container-apps/app.bicep' = {
-  name: 'container-apps-app'
+module containerAppsApiApp '../core/host/container-apps/app.bicep' = {
+  name: 'container-apps-api-app'
   params: {
-    name: appName
+    name: apiAppName
     parentEnvironmentName: containerAppsEnvironment.outputs.name
     location: location
     tags: union(tags, {
-        'azd-service-name': serviceTag
+        'azd-service-name': apiServiceTag
       })
     secrets: [
       {
@@ -51,18 +53,46 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
         secretRef: 'azure-cosmos-db-nosql-endpoint' // Reference to secret
       }
       {
-        name: 'AZURE_MANAGED_IDENTITY_CLIENT_ID'
-        secretRef: 'azure-managed-identity-client-id'
+        name: 'AZURE_CLIENT_ID' // Name of the environment variable referenced in the application
+        secretRef: 'azure-managed-identity-client-id' // Reference to secret
       }
     ]
-    targetPort: 8080
+    ingressEnabled: true
+    externalAccess: false
+    targetPort: 8000
     enableSystemAssignedManagedIdentity: false
     userAssignedManagedIdentityIds: [
       userAssignedManagedIdentity.resourceId
     ]
-    containerImage: 'mcr.microsoft.com/dotnet/samples:aspnetapp'
   }
 }
 
-output endpoint string = containerAppsApp.outputs.endpoint
-output envName string = containerAppsApp.outputs.name
+module containerAppsWebApp '../core/host/container-apps/app.bicep' = {
+  name: 'container-apps-web-app'
+  params: {
+    name: webAppName
+    parentEnvironmentName: containerAppsEnvironment.outputs.name
+    location: location
+    tags: union(tags, {
+        'azd-service-name': webServiceTag
+      })
+    secrets: [
+      {
+        name: 'base-api-url' // Create a uniquely-named secret
+        value: containerAppsApiApp.outputs.endpoint // Endpoint to API app
+      }
+    ]
+    environmentVariables: [
+      {
+        name: 'BASE_API_ENDPOINT' // Name of the environment variable referenced in the application
+        secretRef: 'base-api-url' // Reference to secret
+      }
+    ]
+    ingressEnabled: true
+    externalAccess: true
+    targetPort: 8000
+  }
+}
+
+output endpoint string = containerAppsWebApp.outputs.endpoint
+output envName string = containerAppsEnvironment.outputs.name

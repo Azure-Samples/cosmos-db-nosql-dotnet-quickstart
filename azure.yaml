@@ -8,26 +8,27 @@ services:
     host: containerapp
     docker:
       path: ./Dockerfile
-      context: ../
+      context: ./
+  api:
+    project: ./src/api
+    language: csharp
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      context: ./
 pipeline:
   provider: github
 hooks:
   postprovision:
     windows:
       run: |
-        dotnet user-secrets set "AZURE_COSMOS_DB_NOSQL_ENDPOINT" "$env:AZURE_COSMOS_ENDPOINT" --project ./src/web/Cosmos.Samples.NoSQL.Quickstart.Web.csproj
-        Write-Host ""
-        Write-Host "View the running web application in Azure Container Apps:"
-        Write-Host "$env:AZURE_CONTAINER_APP_ENDPOINT" -ForegroundColor Cyan
+        dotnet user-secrets set "AZURE_COSMOS_DB_NOSQL_ENDPOINT" "$env:AZURE_COSMOS_ENDPOINT" --project ./src/api/Cosmos.Samples.NoSQL.Quickstart.Api.csproj
       shell: pwsh
       continueOnError: false
       interactive: true
     posix:
       run: |
-        dotnet user-secrets set "AZURE_COSMOS_DB_NOSQL_ENDPOINT" "$AZURE_COSMOS_ENDPOINT" --project ./src/web/Cosmos.Samples.NoSQL.Quickstart.Web.csproj
-        echo ""
-        echo "View the running web application in Azure Container Apps:"
-        echo -e "\033[0;36m$AZURE_CONTAINER_APP_ENDPOINT\033[0m"
+        dotnet user-secrets set "AZURE_COSMOS_DB_NOSQL_ENDPOINT" "$AZURE_COSMOS_ENDPOINT" --project ./src/api/Cosmos.Samples.NoSQL.Quickstart.Api.csproj
       shell: sh
       continueOnError: false
       interactive: true

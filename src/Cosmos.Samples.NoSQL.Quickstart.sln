@@ -5,6 +5,10 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Samples.NoSQL.Quickstart.Web", "web\Cosmos.Samples.NoSQL.Quickstart.Web.csproj", "{F161D39F-F515-410A-9FE3-CA95A2659966}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Samples.NoSQL.Quickstart.Api", "api\Cosmos.Samples.NoSQL.Quickstart.Api.csproj", "{DF0ADF1C-FB3B-428F-9020-C42099658B06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cosmos.Samples.NoSQL.Quickstarts.Models", "models\Cosmos.Samples.NoSQL.Quickstarts.Models.csproj", "{D2B9A72E-7555-4C9C-91F4-BE85021C0AA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{F161D39F-F515-410A-9FE3-CA95A2659966}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F161D39F-F515-410A-9FE3-CA95A2659966}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F161D39F-F515-410A-9FE3-CA95A2659966}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF0ADF1C-FB3B-428F-9020-C42099658B06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF0ADF1C-FB3B-428F-9020-C42099658B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF0ADF1C-FB3B-428F-9020-C42099658B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF0ADF1C-FB3B-428F-9020-C42099658B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B9A72E-7555-4C9C-91F4-BE85021C0AA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B9A72E-7555-4C9C-91F4-BE85021C0AA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B9A72E-7555-4C9C-91F4-BE85021C0AA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B9A72E-7555-4C9C-91F4-BE85021C0AA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

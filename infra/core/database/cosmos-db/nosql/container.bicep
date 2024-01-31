@@ -50,7 +50,8 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
       id: name
       partitionKey: {
         paths: partitionKeyPaths
-        kind: 'Hash'
+        kind: length(partitionKeyPaths) > 1 ? 'MultiHash' : 'Hash'
+        version: 2
       }
     }
   }

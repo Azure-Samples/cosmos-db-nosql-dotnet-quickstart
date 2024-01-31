@@ -4,14 +4,61 @@ param accountName string
 param location string = resourceGroup().location
 param tags object = {}
 
+var database = {
+  name: 'cosmicworks' // Database for chat application
+  throughput: 400 // Set the throughput to 400 RU/s
+}
+
+var containers = [
+  {
+    name: 'products' // Container for products
+    partitionKeyPaths: [
+      '/category/name' // Partition on the category name
+      '/category/subCategory/name' // Partition on the subcategory name
+    ]
+  }
+]
+
 module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
   name: 'cosmos-db-account'
   params: {
     name: accountName
     location: location
     tags: tags
+    disableKeyBasedControlPlaneAuth: false
+    disableKeyBasedDataPlaneAuth: false
   }
 }
 
+module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
+  name: 'cosmos-db-database-${database.name}'
+  params: {
+    name: database.name
+    parentAccountName: cosmosDbAccount.outputs.name
+    tags: tags
+    setThroughput: true
+    throughput: database.throughput
+  }
+}
+
+module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [for (container, _) in containers: {
+  name: 'cosmos-db-container-${container.name}'
+  params: {
+    name: container.name
+    parentAccountName: cosmosDbAccount.outputs.name
+    parentDatabaseName: cosmosDbDatabase.outputs.name
+    tags: tags
+    setThroughput: false
+    partitionKeyPaths: container.partitionKeyPaths
+  }
+}]
+
 output endpoint string = cosmosDbAccount.outputs.endpoint
 output accountName string = cosmosDbAccount.outputs.name
+
+output database object = {
+  name: cosmosDbDatabase.outputs.name
+}
+output containers array = [for (_, index) in containers: {
+  name: cosmosDbContainers[index].outputs.name
+}]
