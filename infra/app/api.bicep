@@ -53,7 +53,7 @@ module app '../core/host/container-apps/app.bicep' = {
       }
     ]
     ingressEnabled: true
-    externalAccess: true
+    externalAccess: false
     targetPort: 8080
     containerImage: 'mcr.microsoft.com/dotnet/samples:aspnetapp'
     enableSystemAssignedManagedIdentity: false
