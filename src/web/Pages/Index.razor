@@ -1,81 +1,20 @@
 ﻿@page "/"
-@inject ICosmosDbService cosmosDbService
-@using System.Text
-
-<pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
-    @_console.ToString()
-</pre>
-
-<section class="d-flex justify-content-center">
-    <div class="list-group py-2">
-    <button type="button" class="list-group-item list-group-item-action @(_runAgainEnabled ? "" : "disabled") active" aria-current="true" @onclick="RunAgain">
-        <i class="bi bi-arrow-clockwise me-2"></i>
-        Run again
-    </button>
-        <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet#walk-through-the-net-library-code" class="list-group-item list-group-item-action" target="_blank">
-            <i class="bi bi-book me-2"></i>
-            Walk through the code for this sample application
-            <small class="ms-1 align-top">            
-                <i class="bi bi-box-arrow-up-right" style="font-size: 0.65rem;"></i>
-            </small>
-        </a>
-        <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/" class="list-group-item list-group-item-action" target="_blank">
-            <i class="bi bi-lightbulb me-2"></i>
-            Learn more about Azure Cosmos DB for NoSQL
-            <small class="ms-1 align-top">            
-                <i class="bi bi-box-arrow-up-right" style="font-size: 0.65rem;"></i>
-            </small>
-        </a>
-    </div>
-</section>
+@inject IDataApiService dataApiService
 
 <footer class="fixed-bottom bg-secondary bg-body-secondary border">
     <small class="px-5 fw-light fst-italic">
         <strong>
-            ENDPOINT:
+            OUTPUT:
         </strong>
-        @cosmosDbService.GetEndpoint()
+        @_output
     </small>
 </footer>
 
 @code {
-    private StringBuilder _console = new();
+    private string _output = String.Empty;
 
-    private bool _runAgainEnabled = false;
-
-    protected override void OnInitialized() => GenerateQueryDataAsync();
-
-    private void RunAgain() => GenerateQueryDataAsync();
-
-    private async void GenerateQueryDataAsync()
+    protected override async Task OnInitializedAsync()
     {
-        await SetRunAgain(false);
-        await ClearConsoleAsync();
-
-        await WriteToConsoleAync("Current Status:\tStarting...");
-
-        await cosmosDbService.RunDemoAsync(writeOutputAync: WriteToConsoleAync);
-
-        await WriteToConsoleAync("Current Status:\tStopping...");
-        await SetRunAgain(true);
-
-        async Task WriteToConsoleAync(string message)
-        {
-            _console.AppendLine(message);
-            await InvokeAsync(StateHasChanged);
-            await Task.Delay(TimeSpan.FromSeconds(0.75));
-        }
-
-        async Task ClearConsoleAsync()
-        {
-            _console.Clear();
-            await InvokeAsync(StateHasChanged);
-        }
-
-        async Task SetRunAgain(bool state)
-        {
-            _runAgainEnabled = state;
-            await InvokeAsync(StateHasChanged);
-        }
+        _output = await dataApiService.StartAsync();
     }
 }

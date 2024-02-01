@@ -4,5 +4,6 @@
   "containerAppsApp": "container-app",
   "cosmosDbAccount": "cosmos-db-nosql",
   "openAiAccount": "openai",
-  "userAssignedIdentity": "ua-id"
+  "userAssignedIdentity": "ua-id",
+  "deploymentScript": "deploy-"
 }

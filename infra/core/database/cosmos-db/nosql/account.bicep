@@ -7,8 +7,11 @@ param tags object = {}
 @description('Enables serverless for this account. Defaults to false.')
 param enableServerless bool = false
 
-@description('Disables key-based authentication. Defaults to false.')
-param disableKeyBasedAuth bool = false
+@description('Disables key-based authentication to the data plane. Defaults to false.')
+param disableKeyBasedDataPlaneAuth bool = false
+
+@description('Disables key-based authentication to the control plane. Defaults to false.')
+param disableKeyBasedControlPlaneAuth bool = false
 
 module account '../account.bicep' = {
   name: 'cosmos-db-nosql-account'
@@ -18,7 +21,8 @@ module account '../account.bicep' = {
     tags: tags
     kind: 'GlobalDocumentDB'
     enableServerless: enableServerless
-    disableKeyBasedAuth: disableKeyBasedAuth
+    disableKeyBasedControlPlaneAuth: disableKeyBasedDataPlaneAuth
+    disableKeyBasedDataPlaneAuth: disableKeyBasedControlPlaneAuth
   }
 }
 
