@@ -80,22 +80,43 @@ module registry 'app/registry.bicep' = {
   }
 }
 
-module web 'app/web.bicep' = {
-  name: webServiceName
+module env 'app/env.bicep' = {
+  name: 'env'
   scope: resourceGroup
   params: {
-    envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
-    webAppName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-web-${resourceToken}'
-    apiAppName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-api-${resourceToken}'
+    name: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
+module api 'app/api.bicep' = {
+  name: apiServiceName
+  scope: resourceGroup
+  params: {
+    name: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-api-${resourceToken}'
+    location: location
+    tags: tags
+    serviceTag: apiServiceName
+    envName: env.outputs.name
     databaseAccountEndpoint: database.outputs.endpoint
     userAssignedManagedIdentity: {
       resourceId: identity.outputs.resourceId
       clientId: identity.outputs.clientId
     }
+  }
+}
+
+module web 'app/web.bicep' = {
+  name: webServiceName
+  scope: resourceGroup
+  params: {
+    name: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-web-${resourceToken}'
     location: location
     tags: tags
-    webServiceTag: webServiceName
-    apiServiceTag: apiServiceName
+    serviceTag: webServiceName
+    envName: env.outputs.name
+    apiAppEndpoint: api.outputs.endpoint
   }
 }
 
@@ -119,8 +140,9 @@ output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
 output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
 
 // Application outputs
-output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
-output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
+output AZURE_CONTAINER_ENVIRONMENT_NAME string = env.outputs.name
+output AZURE_CONTAINER_APP_API_ENDPOINT string = api.outputs.endpoint
+output AZURE_CONTAINER_APP_WEB_ENDPOINT string = web.outputs.endpoint
 
 // Identity outputs
 output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.name

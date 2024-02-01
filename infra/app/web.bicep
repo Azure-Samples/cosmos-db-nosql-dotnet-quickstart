@@ -1,85 +1,33 @@
-metadata description = 'Create web application resources.'
+metadata description = 'Create web front-end application resources.'
 
-param envName string
-param webAppName string
-param webServiceTag string
-param apiAppName string
-param apiServiceTag string
+param name string
 param location string = resourceGroup().location
 param tags object = {}
+param serviceTag string
 
-@description('Endpoint for Azure Cosmos DB for NoSQL account.')
-param databaseAccountEndpoint string
+@description('Name of the Azure Container Apps environment.')
+param envName string
 
-type managedIdentity = {
-  resourceId: string
-  clientId: string
+@description('The endpoint of the API app to connect to.')
+param apiAppEndpoint string
+
+resource environment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
+  name: envName
 }
 
-@description('Unique identifier for user-assigned managed identity.')
-param userAssignedManagedIdentity managedIdentity
-
-module containerAppsEnvironment '../core/host/container-apps/environments/managed.bicep' = {
-  name: 'container-apps-env'
-  params: {
-    name: envName
-    location: location
-    tags: tags
-  }
-}
-
-module containerAppsApiApp '../core/host/container-apps/app.bicep' = {
-  name: 'container-apps-api-app'
-  params: {
-    name: apiAppName
-    parentEnvironmentName: containerAppsEnvironment.outputs.name
-    location: location
-    tags: union(tags, {
-        'azd-service-name': apiServiceTag
-      })
-    secrets: [
-      {
-        name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret
-        value: databaseAccountEndpoint // NoSQL database account endpoint
-      }
-      {
-        name: 'azure-managed-identity-client-id' // Create a uniquely-named secret
-        value: userAssignedManagedIdentity.clientId // Client ID of user-assigned managed identity
-      }
-    ]
-    environmentVariables: [
-      {
-        name: 'AZURE_COSMOS_DB_NOSQL_ENDPOINT' // Name of the environment variable referenced in the application
-        secretRef: 'azure-cosmos-db-nosql-endpoint' // Reference to secret
-      }
-      {
-        name: 'AZURE_CLIENT_ID' // Name of the environment variable referenced in the application
-        secretRef: 'azure-managed-identity-client-id' // Reference to secret
-      }
-    ]
-    ingressEnabled: true
-    externalAccess: false
-    targetPort: 8000
-    enableSystemAssignedManagedIdentity: false
-    userAssignedManagedIdentityIds: [
-      userAssignedManagedIdentity.resourceId
-    ]
-  }
-}
-
-module containerAppsWebApp '../core/host/container-apps/app.bicep' = {
+module app '../core/host/container-apps/app.bicep' = {
   name: 'container-apps-web-app'
   params: {
-    name: webAppName
-    parentEnvironmentName: containerAppsEnvironment.outputs.name
+    name: name
+    parentEnvironmentName: environment.name
     location: location
     tags: union(tags, {
-        'azd-service-name': webServiceTag
+        'azd-service-name': serviceTag
       })
     secrets: [
       {
         name: 'base-api-url' // Create a uniquely-named secret
-        value: containerAppsApiApp.outputs.endpoint // Endpoint to API app
+        value: apiAppEndpoint // Endpoint to API app
       }
     ]
     environmentVariables: [
@@ -90,9 +38,9 @@ module containerAppsWebApp '../core/host/container-apps/app.bicep' = {
     ]
     ingressEnabled: true
     externalAccess: true
-    targetPort: 8000
+    targetPort: 8080
+    containerImage: 'mcr.microsoft.com/dotnet/samples:aspnetapp'
   }
 }
 
-output endpoint string = containerAppsWebApp.outputs.endpoint
-output envName string = containerAppsEnvironment.outputs.name
+output endpoint string = app.outputs.endpoint
