@@ -5,7 +5,6 @@
     "ghcr.io/devcontainers/features/azure-cli:latest": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   },
-  "onCreateCommand": "dotnet workload update",
   "updateContentCommand": "dotnet build src/Cosmos.Samples.NoSQL.Quickstart.sln",
   "customizations": {
     "vscode": {
