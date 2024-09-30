@@ -48,7 +48,7 @@ internal sealed class CosmosDbService : ICosmosDbService
                 item: item,
                 partitionKey: new PartitionKey("gear-surf-surfboards")
             );
-            // </create_item>            
+            // </create_item>
             await writeOutputAync($"Upserted item:\t{response.Resource}");
             await writeOutputAync($"Status code:\t{response.StatusCode}");
             await writeOutputAync($"Request charge:\t{response.RequestCharge:0.00}");
