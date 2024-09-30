@@ -14,7 +14,7 @@ if (builder.Environment.IsDevelopment())
         CosmosClient client = new(
             accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
             tokenCredential: new DefaultAzureCredential()
-        );
+        );    
         // </create_client>
         return client;
     });
