@@ -10,12 +10,12 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddSingleton<CosmosClient>((_) =>
     {
-        // <create_client>
+        // <create_client>    
         CosmosClient client = new(
             accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
             tokenCredential: new DefaultAzureCredential()
-        );    
-        // </create_client>
+        );
+        // </create_client>    
         return client;
     });
 }
