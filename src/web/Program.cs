@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
+// <client_configuration>
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddSingleton<CosmosClient>((_) =>
@@ -36,6 +37,7 @@ else
         return client;
     });
 }
+// </client_configuration>
 
 builder.Services.AddTransient<ICosmosDbService, CosmosDbService>();
 
