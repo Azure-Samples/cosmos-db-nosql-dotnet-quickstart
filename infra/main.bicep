@@ -17,7 +17,6 @@ param cosmosDbAccountName string = ''
 param containerRegistryName string = ''
 param containerAppsEnvName string = ''
 param containerAppsAppName string = ''
-param userAssignedIdentityName string = ''
 
 // serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host
 param serviceName string = 'web'
@@ -33,16 +32,6 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: environmentName
   location: location
   tags: tags
-}
-
-module identity 'app/identity.bicep' = {
-  name: 'identity'
-  scope: resourceGroup
-  params: {
-    identityName: !empty(userAssignedIdentityName) ? userAssignedIdentityName : '${abbreviations.userAssignedIdentity}-${resourceToken}'
-    location: location
-    tags: tags
-  }
 }
 
 module database 'app/database.bicep' = {
@@ -81,10 +70,6 @@ module web 'app/web.bicep' = {
     envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
     appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
     databaseAccountEndpoint: database.outputs.endpoint
-    userAssignedManagedIdentity: {
-      resourceId: identity.outputs.resourceId
-      clientId: identity.outputs.clientId
-    }
     location: location
     tags: tags
     serviceTag: serviceName
@@ -96,15 +81,15 @@ module security 'app/security.bicep' = {
   scope: resourceGroup
   params: {
     databaseAccountName: database.outputs.accountName
-    appPrincipalId: identity.outputs.principalId
+    appPrincipalId: web.outputs.systemAssignedManagedIdentityPrincipalId
     userPrincipalId: !empty(principalId) ? principalId : null
   }
 }
 
 // Database outputs
-output AZURE_COSMOS_ENDPOINT string = database.outputs.endpoint
-output AZURE_COSMOS_DATABASE_NAME string = data.outputs.database.name
-output AZURE_COSMOS_CONTAINER_NAMES array = map(data.outputs.containers, c => c.name)
+output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint
+output AZURE_COSMOS_DB_NOSQL_DATABASE_NAME string = data.outputs.database.name
+output AZURE_COSMOS_DB_NOSQL_CONTAINER_NAMES array = map(data.outputs.containers, c => c.name)
 
 // Container outputs
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
@@ -114,11 +99,5 @@ output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
 output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
 output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
 
-// Identity outputs
-output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.name
-
 // Security outputs
 output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql
-
-// Application environment variables
-output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint

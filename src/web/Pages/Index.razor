@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject ICosmosDbService cosmosDbService
+@inject IDemoService demoService
 @using System.Text
 
 <pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
@@ -34,7 +34,7 @@
         <strong>
             ENDPOINT:
         </strong>
-        @cosmosDbService.GetEndpoint()
+        @demoService.GetEndpoint()
     </small>
 </footer>
 
@@ -54,7 +54,7 @@
 
         await WriteToConsoleAync("Current Status:\tStarting...");
 
-        await cosmosDbService.RunDemoAsync(writeOutputAync: WriteToConsoleAync);
+        await demoService.RunAsync(writeOutputAync: WriteToConsoleAync);
 
         await WriteToConsoleAync("Current Status:\tStopping...");
         await SetRunAgain(true);
