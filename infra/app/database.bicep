@@ -35,7 +35,7 @@ module cosmosDbAccount 'br/public:avm/res/document-db/database-account:0.6.1' = 
     disableLocalAuth: true
     sqlRoleDefinitions: [
       {
-        name: 'Write to Azure Cosmos DB for NoSQL data plane'
+        name: 'nosql-data-plane-contributor'
         dataAction: [
           'Microsoft.DocumentDB/databaseAccounts/readMetadata' // Read account metadata
           'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*' // Create items

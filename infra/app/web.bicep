@@ -10,7 +10,10 @@ param tags object = {}
 @description('Endpoint for Azure Cosmos DB for Table account.')
 param databaseAccountEndpoint string
 
-@description('Id of the service principals to assign database and application roles.')
+@description('Client ID of the service principal to assign database and application roles.')
+param appClientId string
+
+@description('ID of the service principal to assign database and application roles.')
 param appPrincipalId string
 
 module logAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.7.0' = {
@@ -56,7 +59,7 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
         }
         {
           name: 'user-assigned-managed-identity-client-id'
-          value: appPrincipalId
+          value: appClientId
         }
       ]
     }
