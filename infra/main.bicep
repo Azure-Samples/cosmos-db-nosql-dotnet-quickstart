@@ -77,7 +77,7 @@ module web 'app/web.bicep' = {
     location: location
     tags: tags
     serviceTag: serviceName    
-    appPrincipalId: identity.outputs.principalId
+    appResourceId: identity.outputs.resourceId
     appClientId: identity.outputs.clientId
     databaseAccountEndpoint: database.outputs.endpoint
   }
