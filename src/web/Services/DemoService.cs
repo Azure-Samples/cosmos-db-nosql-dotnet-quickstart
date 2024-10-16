@@ -1,25 +1,18 @@
 using Cosmos.Samples.NoSQL.Quickstart.Web.Models;
 using Microsoft.Azure.Cosmos;
 
-internal interface ICosmosDbService
+internal interface IDemoService
 {
-    Task RunDemoAsync(Func<string, Task> writeOutputAync);
+    Task RunAsync(Func<string, Task> writeOutputAync);
 
     string GetEndpoint();
 }
 
-internal sealed class CosmosDbService : ICosmosDbService
+internal sealed class DemoService(CosmosClient client) : IDemoService
 {
-    private readonly CosmosClient client;
-
-    public CosmosDbService(CosmosClient client)
-    {
-        this.client = client;
-    }
-
     public string GetEndpoint() => $"{client.Endpoint}";
 
-    public async Task RunDemoAsync(Func<string, Task> writeOutputAync)
+    public async Task RunAsync(Func<string, Task> writeOutputAync)
     {
         // <get_database>
         Database database = client.GetDatabase("cosmicworks");
@@ -48,7 +41,7 @@ internal sealed class CosmosDbService : ICosmosDbService
                 item: item,
                 partitionKey: new PartitionKey("gear-surf-surfboards")
             );
-            // </create_item>            
+            // </create_item>
             await writeOutputAync($"Upserted item:\t{response.Resource}");
             await writeOutputAync($"Status code:\t{response.StatusCode}");
             await writeOutputAync($"Request charge:\t{response.RequestCharge:0.00}");

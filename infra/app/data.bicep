@@ -5,8 +5,6 @@ param tags object = {}
 
 var database = {
   name: 'cosmicworks' // Based on AdventureWorksLT data set
-  autoscale: true // Scale at the database level
-  throughput: 1000 // Enable autoscale with a minimum of 100 RUs and a maximum of 1,000 RUs
 }
 
 var containers = [
@@ -15,6 +13,8 @@ var containers = [
     partitionKeyPaths: [
       '/category' // Partition on the product category
     ]
+    autoscale: true // Scale at the container level
+    throughput: 1000 // Enable autoscale with a minimum of 100 RUs and a maximum of 1,000 RUs
   }
 ]
 
@@ -24,9 +24,7 @@ module cosmosDbDatabase '../core/database/cosmos-db/nosql/database.bicep' = {
     name: database.name
     parentAccountName: databaseAccountName
     tags: tags
-    setThroughput: true
-    autoscale: database.autoscale
-    throughput: database.throughput
+    setThroughput: false
   }
 }
 
@@ -37,7 +35,9 @@ module cosmosDbContainers '../core/database/cosmos-db/nosql/container.bicep' = [
     parentAccountName: databaseAccountName
     parentDatabaseName: cosmosDbDatabase.outputs.name
     tags: tags
-    setThroughput: false
+    setThroughput: true
+    autoscale: container.autoscale
+    throughput: container.throughput
     partitionKeyPaths: container.partitionKeyPaths
   }
 }]

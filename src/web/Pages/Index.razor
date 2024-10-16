@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject ICosmosDbService cosmosDbService
+@inject IDemoService demoService
 @using System.Text
 
 <pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
@@ -10,19 +10,19 @@
     <div class="list-group py-2">
     <button type="button" class="list-group-item list-group-item-action @(_runAgainEnabled ? "" : "disabled") active" aria-current="true" @onclick="RunAgain">
         <i class="bi bi-arrow-clockwise me-2"></i>
-        Run again
+        Restart
     </button>
-        <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet#walk-through-the-net-library-code" class="list-group-item list-group-item-action" target="_blank">
+        <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/quickstart-dotnet#code-examples" class="list-group-item list-group-item-action" target="_blank">
             <i class="bi bi-book me-2"></i>
             Walk through the code for this sample application
-            <small class="ms-1 align-top">            
+            <small class="ms-1 align-top">
                 <i class="bi bi-box-arrow-up-right" style="font-size: 0.65rem;"></i>
             </small>
         </a>
         <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/" class="list-group-item list-group-item-action" target="_blank">
             <i class="bi bi-lightbulb me-2"></i>
             Learn more about Azure Cosmos DB for NoSQL
-            <small class="ms-1 align-top">            
+            <small class="ms-1 align-top">
                 <i class="bi bi-box-arrow-up-right" style="font-size: 0.65rem;"></i>
             </small>
         </a>
@@ -34,7 +34,7 @@
         <strong>
             ENDPOINT:
         </strong>
-        @cosmosDbService.GetEndpoint()
+        @demoService.GetEndpoint()
     </small>
 </footer>
 
@@ -54,7 +54,7 @@
 
         await WriteToConsoleAync("Current Status:\tStarting...");
 
-        await cosmosDbService.RunDemoAsync(writeOutputAync: WriteToConsoleAync);
+        await demoService.RunAsync(writeOutputAync: WriteToConsoleAync);
 
         await WriteToConsoleAync("Current Status:\tStopping...");
         await SetRunAgain(true);
