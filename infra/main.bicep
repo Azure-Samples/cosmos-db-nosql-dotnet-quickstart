@@ -13,6 +13,7 @@ param location string
 param principalId string = ''
 
 // Optional parameters
+param logWorkspaceName string = ''
 param cosmosDbAccountName string = ''
 param containerRegistryName string = ''
 param containerAppsEnvName string = ''
@@ -34,6 +35,16 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   tags: tags
 }
 
+module identity 'app/identity.bicep' = {
+  name: 'identity'
+  scope: resourceGroup
+  params: {
+    identityName: '${abbreviations.userAssignedIdentity}-${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
 module database 'app/database.bicep' = {
   name: 'database'
   scope: resourceGroup
@@ -41,15 +52,8 @@ module database 'app/database.bicep' = {
     accountName: !empty(cosmosDbAccountName) ? cosmosDbAccountName : '${abbreviations.cosmosDbAccount}-${resourceToken}'
     location: location
     tags: tags
-  }
-}
-
-module data 'app/data.bicep' = {
-  name: 'data'
-  scope: resourceGroup
-  params: {
-    databaseAccountName: database.outputs.accountName
-    tags: tags
+    appPrincipalId: identity.outputs.principalId
+    userPrincipalId: !empty(principalId) ? principalId : null
   }
 }
 
@@ -67,29 +71,20 @@ module web 'app/web.bicep' = {
   name: serviceName
   scope: resourceGroup
   params: {
+    workspaceName: !empty(logWorkspaceName) ? logWorkspaceName : '${abbreviations.logAnalyticsWorkspace}-${resourceToken}'
     envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
     appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
-    databaseAccountEndpoint: database.outputs.endpoint
     location: location
     tags: tags
-    serviceTag: serviceName
-  }
-}
-
-module security 'app/security.bicep' = {
-  name: 'security'
-  scope: resourceGroup
-  params: {
-    databaseAccountName: database.outputs.accountName
-    appPrincipalId: web.outputs.systemAssignedManagedIdentityPrincipalId
-    userPrincipalId: !empty(principalId) ? principalId : null
+    serviceTag: serviceName    
+    appResourceId: identity.outputs.resourceId
+    appClientId: identity.outputs.clientId
+    databaseAccountEndpoint: database.outputs.endpoint
   }
 }
 
 // Database outputs
 output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint
-output AZURE_COSMOS_DB_NOSQL_DATABASE_NAME string = data.outputs.database.name
-output AZURE_COSMOS_DB_NOSQL_CONTAINER_NAMES array = map(data.outputs.containers, c => c.name)
 
 // Container outputs
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
@@ -98,6 +93,3 @@ output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
 // Application outputs
 output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
 output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
-
-// Security outputs
-output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql
