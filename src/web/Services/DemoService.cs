@@ -14,20 +14,17 @@ internal sealed class DemoService(CosmosClient client) : IDemoService
 
     public async Task RunAsync(Func<string, Task> writeOutputAync)
     {
-        // <get_database>
         Database database = client.GetDatabase("cosmicworks");
-        // </get_database>
+
         database = await database.ReadAsync();
         await writeOutputAync($"Get database:\t{database.Id}");
 
-        // <get_container>
         Container container = database.GetContainer("products");
-        // </get_container>
+
         container = await container.ReadContainerAsync();
         await writeOutputAync($"Get container:\t{container.Id}");
 
         {
-            // <create_item>
             Product item = new(
                 id: "68719518391",
                 category: "gear-surf-surfboards",
@@ -41,7 +38,7 @@ internal sealed class DemoService(CosmosClient client) : IDemoService
                 item: item,
                 partitionKey: new PartitionKey("gear-surf-surfboards")
             );
-            // </create_item>
+
             await writeOutputAync($"Upserted item:\t{response.Resource}");
             await writeOutputAync($"Status code:\t{response.StatusCode}");
             await writeOutputAync($"Request charge:\t{response.RequestCharge:0.00}");
@@ -67,12 +64,11 @@ internal sealed class DemoService(CosmosClient client) : IDemoService
         }
 
         {
-            // <read_item>
             ItemResponse<Product> response = await container.ReadItemAsync<Product>(
                 id: "68719518391",
                 partitionKey: new PartitionKey("gear-surf-surfboards")
             );
-            // </read_item>
+
             await writeOutputAync($"Read item id:\t{response.Resource.id}");
             await writeOutputAync($"Read item:\t{response.Resource}");
             await writeOutputAync($"Status code:\t{response.StatusCode}");
@@ -80,7 +76,6 @@ internal sealed class DemoService(CosmosClient client) : IDemoService
         }
 
         {
-            // <query_items>
             var query = new QueryDefinition(
                 query: "SELECT * FROM products p WHERE p.category = @category"
             )
@@ -89,10 +84,9 @@ internal sealed class DemoService(CosmosClient client) : IDemoService
             using FeedIterator<Product> feed = container.GetItemQueryIterator<Product>(
                 queryDefinition: query
             );
-            // </query_items>
+
             await writeOutputAync($"Ran query:\t{query.QueryText}");
 
-            // <parse_results>
             List<Product> items = new();
             double requestCharge = 0d;
             while (feed.HasMoreResults)
@@ -104,7 +98,6 @@ internal sealed class DemoService(CosmosClient client) : IDemoService
                 }
                 requestCharge += response.RequestCharge;
             }
-            // </parse_results>
 
             foreach (var item in items)
             {

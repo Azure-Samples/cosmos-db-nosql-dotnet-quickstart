@@ -1,6 +1,5 @@
 namespace Cosmos.Samples.NoSQL.Quickstart.Web.Models;
 
-// <model>
 public record Product(
     string id,
     string category,
@@ -9,4 +8,3 @@ public record Product(
     decimal price,
     bool clearance
 );
-// </model>
