@@ -32,6 +32,7 @@ module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.8.0
     location: location
     tags: tags
     logAnalyticsWorkspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
+    zoneRedundant: false
   }
 }
 
