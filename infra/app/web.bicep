@@ -45,7 +45,13 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
     tags: union(tags, { 'azd-service-name': serviceTag })
     ingressTargetPort: 8080
     ingressExternal: true
-    ingressTransport: 'auto'
+    ingressTransport: 'http'
+    corsPolicy: {
+      allowCredentials: true
+      allowedOrigins: [
+        '*'
+      ]
+    }
     managedIdentities: {
       systemAssigned: false
       userAssignedResourceIds: [
@@ -69,8 +75,8 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
         image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
         name: 'web-front-end'
         resources: {
-          cpu: '0.25'
-          memory: '0.5Gi'
+          cpu: '1'
+          memory: '2Gi'
         }
         env: [
           {
@@ -86,7 +92,3 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
     ]
   }
 }
-
-output endpoint string = 'https://${containerAppsApp.outputs.fqdn}'
-output envName string = containerAppsApp.outputs.name
-output systemAssignedManagedIdentityPrincipalId string = containerAppsApp.outputs.systemAssignedMIPrincipalId

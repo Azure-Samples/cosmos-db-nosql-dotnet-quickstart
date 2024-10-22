@@ -1,4 +1,4 @@
-targetScope = 'subscription'
+targetScope = 'resourceGroup'
 
 @minLength(1)
 @maxLength(64)
@@ -23,21 +23,14 @@ param containerAppsAppName string = ''
 param serviceName string = 'web'
 
 var abbreviations = loadJsonContent('abbreviations.json')
-var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+var resourceToken = toLower(uniqueString(resourceGroup().id, environmentName, location))
 var tags = {
   'azd-env-name': environmentName
   repo: 'https://github.com/azure-samples/cosmos-db-nosql-dotnet-quickstart'
 }
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: environmentName
-  location: location
-  tags: tags
-}
-
 module identity 'app/identity.bicep' = {
   name: 'identity'
-  scope: resourceGroup
   params: {
     identityName: '${abbreviations.userAssignedIdentity}-${resourceToken}'
     location: location
@@ -47,7 +40,6 @@ module identity 'app/identity.bicep' = {
 
 module database 'app/database.bicep' = {
   name: 'database'
-  scope: resourceGroup
   params: {
     accountName: !empty(cosmosDbAccountName) ? cosmosDbAccountName : '${abbreviations.cosmosDbAccount}-${resourceToken}'
     location: location
@@ -59,7 +51,6 @@ module database 'app/database.bicep' = {
 
 module registry 'app/registry.bicep' = {
   name: 'registry'
-  scope: resourceGroup
   params: {
     registryName: !empty(containerRegistryName) ? containerRegistryName : '${abbreviations.containerRegistry}${resourceToken}'
     location: location
@@ -69,7 +60,6 @@ module registry 'app/registry.bicep' = {
 
 module web 'app/web.bicep' = {
   name: serviceName
-  scope: resourceGroup
   params: {
     workspaceName: !empty(logWorkspaceName) ? logWorkspaceName : '${abbreviations.logAnalyticsWorkspace}-${resourceToken}'
     envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
@@ -83,13 +73,5 @@ module web 'app/web.bicep' = {
   }
 }
 
-// Database outputs
 output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint
-
-// Container outputs
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
-output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
-
-// Application outputs
-output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
-output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
