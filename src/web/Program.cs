@@ -1,9 +1,12 @@
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services;
+using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services.Interfaces;
+using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<CosmosClient>((_) =>
 {
@@ -24,11 +27,10 @@ app.UseDeveloperExceptionPage();
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.UseAntiforgery();
 
-app.UseRouting();
+app.MapStaticAssets();
 
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();

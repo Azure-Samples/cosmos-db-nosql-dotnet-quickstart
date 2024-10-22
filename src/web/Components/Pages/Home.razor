@@ -1,6 +1,10 @@
 ﻿@page "/"
-@inject IDemoService demoService
 @using System.Text
+@inject IDemoService demoService
+
+<PageTitle>
+    Azure Cosmos DB for NoSQL | .NET Quickstart
+</PageTitle>
 
 <pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
     @_console.ToString()
@@ -79,3 +83,4 @@
         }
     }
 }
+

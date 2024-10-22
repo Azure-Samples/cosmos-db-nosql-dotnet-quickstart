@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>f6167579-5a7c-405e-bdae-cf20a79d6b9d</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.*" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\models\Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models.csproj" />
+    <ProjectReference Include="..\services\Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services.csproj" />
+  </ItemGroup>
+</Project>
