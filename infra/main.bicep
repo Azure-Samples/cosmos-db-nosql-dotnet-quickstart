@@ -48,7 +48,7 @@ module database 'app/database.bicep' = {
 }
 
 module web 'app/web.bicep' = {
-  name: serviceName
+  name: 'web'
   params: {
     planName: !empty(appServicePlanName) ? appServicePlanName : '${abbreviations.appServicePlan}-${resourceToken}'
     appName: !empty(appServiceWebAppName) ? appServiceWebAppName : '${abbreviations.appServiceWebApp}-${resourceToken}'
