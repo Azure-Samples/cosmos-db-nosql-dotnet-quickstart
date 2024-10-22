@@ -8,9 +8,6 @@ services:
     project: ./src/web
     language: csharp
     host: appservice
-    docker:
-      path: ./Dockerfile
-      context: ../
 pipeline:
   provider: github
 hooks:
