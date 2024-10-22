@@ -73,13 +73,4 @@ module web 'app/web.bicep' = {
   }
 }
 
-// Database outputs
 output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint
-
-// Container outputs
-output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
-output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
-
-// Application outputs
-output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
-output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName

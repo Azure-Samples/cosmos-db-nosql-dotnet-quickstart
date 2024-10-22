@@ -86,7 +86,3 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
     ]
   }
 }
-
-output endpoint string = 'https://${containerAppsApp.outputs.fqdn}'
-output envName string = containerAppsApp.outputs.name
-output systemAssignedManagedIdentityPrincipalId string = containerAppsApp.outputs.systemAssignedMIPrincipalId
