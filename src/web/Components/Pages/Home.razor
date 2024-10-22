@@ -1,18 +1,19 @@
 ﻿@page "/"
 @using System.Text
 @inject IDemoService demoService
+@rendermode InteractiveServer
 
 <PageTitle>
     Azure Cosmos DB for NoSQL | .NET Quickstart
 </PageTitle>
 
 <pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
-    @_console.ToString()
+    @ConsoleText
 </pre>
 
 <section class="d-flex justify-content-center">
     <div class="list-group py-2">
-    <button type="button" class="list-group-item list-group-item-action @(_runAgainEnabled ? "" : "disabled") active" aria-current="true" @onclick="RunAgain">
+    <button type="button" class="list-group-item list-group-item-action @(RunAgainEnabled ? "" : "disabled") active" aria-current="true" @onclick="RunAgainAsync">
         <i class="bi bi-arrow-clockwise me-2"></i>
         Restart
     </button>
@@ -45,13 +46,24 @@
 @code {
     private StringBuilder _console = new();
 
-    private bool _runAgainEnabled = false;
+    private string ConsoleText
+    {
+        get => _console.ToString();
+    }
 
-    protected override void OnInitialized() => GenerateQueryDataAsync();
+    private bool RunAgainEnabled { get; set; }
 
-    private void RunAgain() => GenerateQueryDataAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await GenerateQueryDataAsync();
+    }
 
-    private async void GenerateQueryDataAsync()
+    private async Task RunAgainAsync()
+    {
+        await GenerateQueryDataAsync();
+    }
+
+    private async Task GenerateQueryDataAsync()
     {
         await SetRunAgain(false);
         await ClearConsoleAsync();
@@ -62,25 +74,24 @@
 
         await WriteToConsoleAync("Current Status:\tStopping...");
         await SetRunAgain(true);
+    }
 
-        async Task WriteToConsoleAync(string message)
-        {
-            _console.AppendLine(message);
-            await InvokeAsync(StateHasChanged);
-            await Task.Delay(TimeSpan.FromSeconds(0.75));
-        }
+    private async Task WriteToConsoleAync(string message)
+    {
+        _console.AppendLine(message);
+        await InvokeAsync(StateHasChanged);
+    }
 
-        async Task ClearConsoleAsync()
-        {
-            _console.Clear();
-            await InvokeAsync(StateHasChanged);
-        }
+    private async Task ClearConsoleAsync()
+    {
+        _console.Clear();
+        await InvokeAsync(StateHasChanged);
+    }
 
-        async Task SetRunAgain(bool state)
-        {
-            _runAgainEnabled = state;
-            await InvokeAsync(StateHasChanged);
-        }
+    private async Task SetRunAgain(bool state)
+    {
+        RunAgainEnabled = state;
+        await InvokeAsync(StateHasChanged);
     }
 }
 
