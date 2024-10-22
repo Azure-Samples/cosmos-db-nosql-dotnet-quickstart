@@ -1,14 +1,10 @@
-using Cosmos.Samples.NoSQL.Quickstart.Web.Models;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models;
+using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services.Interfaces;
 
-internal interface IDemoService
-{
-    Task RunAsync(Func<string, Task> writeOutputAync);
+namespace Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services;
 
-    string GetEndpoint();
-}
-
-internal sealed class DemoService(CosmosClient client) : IDemoService
+public sealed class DemoService(CosmosClient client) : IDemoService
 {
     public string GetEndpoint() => $"{client.Endpoint}";
 

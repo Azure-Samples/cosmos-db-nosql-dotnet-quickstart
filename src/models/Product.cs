@@ -1,4 +1,4 @@
-namespace Cosmos.Samples.NoSQL.Quickstart.Web.Models;
+namespace Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models;
 
 public record Product(
     string id,
