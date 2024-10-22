@@ -13,9 +13,11 @@ param location string
 param principalId string = ''
 
 // Optional parameters
+param logWorkspaceName string = ''
 param cosmosDbAccountName string = ''
-param appServicePlanName string = ''
-param appServiceWebAppName string = ''
+param containerRegistryName string = ''
+param containerAppsEnvName string = ''
+param containerAppsAppName string = ''
 
 // serviceName is used as value for the tag (azd-service-name) azd uses to identify deployment host
 param serviceName string = 'web'
@@ -47,11 +49,21 @@ module database 'app/database.bicep' = {
   }
 }
 
-module web 'app/web.bicep' = {
-  name: 'web'
+module registry 'app/registry.bicep' = {
+  name: 'registry'
   params: {
-    planName: !empty(appServicePlanName) ? appServicePlanName : '${abbreviations.appServicePlan}-${resourceToken}'
-    appName: !empty(appServiceWebAppName) ? appServiceWebAppName : '${abbreviations.appServiceWebApp}-${resourceToken}'
+    registryName: !empty(containerRegistryName) ? containerRegistryName : '${abbreviations.containerRegistry}${resourceToken}'
+    location: location
+    tags: tags
+  }
+}
+
+module web 'app/web.bicep' = {
+  name: serviceName
+  params: {
+    workspaceName: !empty(logWorkspaceName) ? logWorkspaceName : '${abbreviations.logAnalyticsWorkspace}-${resourceToken}'
+    envName: !empty(containerAppsEnvName) ? containerAppsEnvName : '${abbreviations.containerAppsEnv}-${resourceToken}'
+    appName: !empty(containerAppsAppName) ? containerAppsAppName : '${abbreviations.containerAppsApp}-${resourceToken}'
     location: location
     tags: tags
     serviceTag: serviceName    
@@ -61,4 +73,13 @@ module web 'app/web.bicep' = {
   }
 }
 
+// Database outputs
 output AZURE_COSMOS_DB_NOSQL_ENDPOINT string = database.outputs.endpoint
+
+// Container outputs
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
+output AZURE_CONTAINER_REGISTRY_NAME string = registry.outputs.name
+
+// Application outputs
+output AZURE_CONTAINER_APP_ENDPOINT string = web.outputs.endpoint
+output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName

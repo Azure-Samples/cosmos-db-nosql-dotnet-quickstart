@@ -1,6 +1,7 @@
 metadata description = 'Create web application resources.'
 
-param planName string
+param workspaceName string
+param envName string
 param appName string
 param serviceTag string
 param location string = resourceGroup().location
@@ -15,45 +16,77 @@ param appClientId string
 @description('Resource ID of the service principal to assign database and application roles.')
 param appResourceId string
 
-module appServicePlan 'br/public:avm/res/web/serverfarm:0.3.0' = {
-  name: 'app-service-plan'
+module logAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.7.0' = {
+  name: 'log-analytics-workspace'
   params: {
-    name: planName
+    name: workspaceName
     location: location
     tags: tags
-    skuCapacity: 1
-    skuName: 'B1'
-    kind: 'Linux'
+  }
+}
+
+module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.8.0' = {
+  name: 'container-apps-env'
+  params: {
+    name: envName
+    location: location
+    tags: tags
+    logAnalyticsWorkspaceResourceId: logAnalyticsWorkspace.outputs.resourceId
     zoneRedundant: false
   }
 }
 
-module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
-  name: 'app-service-web-app'
+module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
+  name: 'container-apps-app'
   params: {
     name: appName
+    environmentResourceId: containerAppsEnvironment.outputs.resourceId
     location: location
     tags: union(tags, { 'azd-service-name': serviceTag })
-    kind: 'app,linux'
-    serverFarmResourceId: appServicePlan.outputs.resourceId
+    ingressTargetPort: 8080
+    ingressExternal: true
+    ingressTransport: 'http'
     managedIdentities: {
       systemAssigned: false
       userAssignedResourceIds: [
         appResourceId
       ]
     }
-    siteConfig: {
-      appSettings: [
+    secrets: {
+      secureList: [
         {
-          name: 'AZURE_COSMOS_DB_NOSQL_ENDPOINT'
+          name: 'azure-cosmos-db-nosql-endpoint'
           value: databaseAccountEndpoint
         }
         {
-          name: 'AZURE_CLIENT_ID'
+          name: 'user-assigned-managed-identity-client-id'
           value: appClientId
         }
       ]
-      linuxFxVersion: 'DOTNETCORE:9.0'
     }
+    containers: [
+      {
+        image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+        name: 'web-front-end'
+        resources: {
+          cpu: '0.25'
+          memory: '0.5Gi'
+        }
+        env: [
+          {
+            name: 'AZURE_COSMOS_DB_NOSQL_ENDPOINT'
+            secretRef: 'azure-cosmos-db-nosql-endpoint'
+          }
+          {
+            name: 'AZURE_CLIENT_ID'
+            secretRef: 'user-assigned-managed-identity-client-id'
+          }
+        ]
+      }
+    ]
   }
 }
+
+output endpoint string = 'https://${containerAppsApp.outputs.fqdn}'
+output envName string = containerAppsApp.outputs.name
+output systemAssignedManagedIdentityPrincipalId string = containerAppsApp.outputs.systemAssignedMIPrincipalId
