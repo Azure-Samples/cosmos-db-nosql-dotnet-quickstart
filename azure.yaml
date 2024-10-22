@@ -7,7 +7,7 @@ services:
   web:
     project: ./src/web
     language: csharp
-    host: containerapp
+    host: appservice
     docker:
       path: ./Dockerfile
       context: ../
