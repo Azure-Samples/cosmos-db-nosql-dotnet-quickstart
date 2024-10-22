@@ -52,7 +52,7 @@ This is a simple Blazor web application to illustrate common basic usage of Azur
 1. (Optionally) Run this web application locally in the `src/web` folder: 
 
     ```dotnetcli
-    dotnet run
+    dotnet watch run
     ```
 
     > [!IMPORTANT]
