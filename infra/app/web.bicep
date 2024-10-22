@@ -22,7 +22,7 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.3.0' = {
     location: location
     tags: tags
     skuCapacity: 1
-    skuName: 'F1'
+    skuName: 'B1'
     kind: 'Linux'
     zoneRedundant: false
   }
