@@ -49,15 +49,11 @@ This is a simple Blazor web application to illustrate common basic usage of Azur
 
     ![Screenshot of the deployed web application.](assets/web.png)
 
-1. (Optionally) Debug this web application locally. 
+1. (Optionally) Run this web application locally in the `src/web` folder: 
 
-    1. In Visual Studio Code, start the debugging feature. For more information, see [debugging C# in Visual Studio Code](https://code.visualstudio.com/docs/csharp/debugging).
+    ```dotnetcli
+    dotnet run
+    ```
 
-    1. Select the **C#** template.
-    
-    1. The **C# Dev Kit** extension will dynamically generate a debug configuration.
-
-    1. Debugging will use the Azure Cosmos DB for NoSQL account that was provisioned in a previous step.
-
-        > [!IMPORTANT]
-        > When your Azure infrastructure is provisioned, the endpoint for your deployed Azure Cosmos DB for NoSQL account is automatically saved in the .NET user secrets store to make debugging easier. For more information, see [safe storage of app secrets in development](https://learn.microsoft.com/aspnet/core/security/app-secrets).
+    > [!IMPORTANT]
+    > When your Azure infrastructure is provisioned, the endpoint for your deployed Azure Cosmos DB for NoSQL account is automatically saved in the .NET user secrets store to make debugging easier. For more information, see [safe storage of app secrets in development](https://learn.microsoft.com/aspnet/core/security/app-secrets).
