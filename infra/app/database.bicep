@@ -15,6 +15,13 @@ module cosmosDbAccount 'br/public:avm/res/document-db/database-account:0.6.1' = 
   params: {
     name: accountName
     location: location
+    locations: [
+      {
+        failoverPriority: 0
+        locationName: location
+        isZoneRedundant: false
+      }
+    ]
     tags: tags
     disableKeyBasedMetadataWriteAccess: true
     disableLocalAuth: true
@@ -25,9 +32,9 @@ module cosmosDbAccount 'br/public:avm/res/document-db/database-account:0.6.1' = 
       {
         name: 'nosql-data-plane-contributor'
         dataAction: [
-          'Microsoft.DocumentDB/databaseAccounts/readMetadata' // Read account metadata
-          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*' // Create items
-          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*' // Manage items      
+          'Microsoft.DocumentDB/databaseAccounts/readMetadata'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*'
+          'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*'     
         ]
       }
     ]
