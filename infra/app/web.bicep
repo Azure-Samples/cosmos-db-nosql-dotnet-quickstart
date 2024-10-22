@@ -32,7 +32,7 @@ module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
     name: appName
     location: location
     tags: union(tags, { 'azd-service-name': serviceTag })
-    kind: 'app,linux,container'
+    kind: 'app'
     serverFarmResourceId: appServicePlan.outputs.resourceId
     managedIdentities: {
       systemAssigned: false
