@@ -1,8 +1,6 @@
 {  
-  "logAnalyticsWorkspace": "log-analytics",
-  "containerRegistry": "containerreg",
-  "containerAppsEnv": "container-env",
-  "containerAppsApp": "container-app",
+  "appServicePlan": "plan",
+  "appServiceWebApp": "web-app",
   "cosmosDbAccount": "cosmos-db-nosql",
   "userAssignedIdentity": "managed-identity"
 }
