@@ -23,6 +23,8 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.3.0' = {
     tags: tags
     skuCapacity: 1
     skuName: 'F1'
+    kind: 'Linux'
+    zoneRedundant: false
   }
 }
 
@@ -32,7 +34,7 @@ module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
     name: appName
     location: location
     tags: union(tags, { 'azd-service-name': serviceTag })
-    kind: 'app,linux,container'
+    kind: 'app,linux'
     serverFarmResourceId: appServicePlan.outputs.resourceId
     managedIdentities: {
       systemAssigned: false
@@ -51,6 +53,7 @@ module appServiceWebApp 'br/public:avm/res/web/site:0.9.0' = {
           value: appClientId
         }
       ]
+      linuxFxVersion: 'DOTNETCORE:9.0'
     }
   }
 }
