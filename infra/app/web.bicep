@@ -46,6 +46,7 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
     ingressTargetPort: 8080
     ingressExternal: true
     ingressTransport: 'auto'
+    stickySessionsAffinity: 'sticky'
     corsPolicy: {
       allowCredentials: true
       allowedOrigins: [
