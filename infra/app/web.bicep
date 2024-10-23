@@ -45,7 +45,7 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
     tags: union(tags, { 'azd-service-name': serviceTag })
     ingressTargetPort: 8080
     ingressExternal: true
-    ingressTransport: 'http'
+    ingressTransport: 'auto'
     corsPolicy: {
       allowCredentials: true
       allowedOrigins: [
