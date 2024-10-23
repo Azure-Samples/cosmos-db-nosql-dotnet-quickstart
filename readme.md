@@ -18,7 +18,7 @@ This is a simple Blazor web application to illustrate common basic usage of Azur
 
 - [Docker](https://www.docker.com/)
 - [Azure Developer CLI](https://aka.ms/azd-install)
-- [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) 
+- [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0) 
 
 ### Quickstart
 
