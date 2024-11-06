@@ -1,21 +1,30 @@
+using System.Configuration;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
 using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models;
 using Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services.Interfaces;
 
+using Settings = Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models.Settings;
+
 namespace Microsoft.Samples.Cosmos.NoSQL.Quickstart.Services;
 
-public sealed class DemoService(CosmosClient client) : IDemoService
+public sealed class DemoService(
+    CosmosClient client,
+    IOptions<Settings.Configuration> configurationOptions
+) : IDemoService
 {
+    private readonly Settings.Configuration configuration = configurationOptions.Value;
+
     public string GetEndpoint() => $"{client.Endpoint}";
 
     public async Task RunAsync(Func<string, Task> writeOutputAync)
     {
-        Database database = client.GetDatabase("cosmicworks");
+        Database database = client.GetDatabase(configuration.AzureCosmosDB.DatabaseName);
 
         database = await database.ReadAsync();
         await writeOutputAync($"Get database:\t{database.Id}");
 
-        Container container = database.GetContainer("products");
+        Container container = database.GetContainer(configuration.AzureCosmosDB.ContainerName);
 
         container = await container.ReadContainerAsync();
         await writeOutputAync($"Get container:\t{container.Id}");

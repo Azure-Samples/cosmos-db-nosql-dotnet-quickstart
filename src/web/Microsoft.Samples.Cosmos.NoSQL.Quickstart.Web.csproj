@@ -6,9 +6,9 @@
     <UserSecretsId>f6167579-5a7c-405e-bdae-cf20a79d6b9d</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.12.1" />
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.45.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\models\Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models.csproj" />
