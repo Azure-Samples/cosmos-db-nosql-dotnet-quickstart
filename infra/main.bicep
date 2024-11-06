@@ -148,6 +148,8 @@ module containerAppsApp 'br/public:avm/res/app/container-app:0.9.0' = {
     ingressExternal: true
     ingressTransport: 'auto'
     stickySessionsAffinity: 'sticky'
+    scaleMaxReplicas: 1
+    scaleMinReplicas: 1
     corsPolicy: {
       allowCredentials: true
       allowedOrigins: [
