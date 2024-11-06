@@ -5,8 +5,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.*" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.*" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.45.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\models\Microsoft.Samples.Cosmos.NoSQL.Quickstart.Models.csproj" />
