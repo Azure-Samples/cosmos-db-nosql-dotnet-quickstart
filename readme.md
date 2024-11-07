@@ -56,6 +56,3 @@ This is a simple Blazor web application to illustrate common basic usage of Azur
     ```dotnetcli
     dotnet watch run
     ```
-
-    > [!IMPORTANT]
-    > When your Azure infrastructure is provisioned, the endpoint for your deployed Azure Cosmos DB for NoSQL account is automatically saved in the .NET user secrets store to make debugging easier. For more information, see [safe storage of app secrets in development](https://learn.microsoft.com/aspnet/core/security/app-secrets).
