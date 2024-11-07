@@ -31,7 +31,7 @@ public sealed class DemoService(
 
         {
             Product item = new(
-                id: "68719518391",
+                id: "aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb",
                 category: "gear-surf-surfboards",
                 name: "Yamba Surfboard",
                 quantity: 12,
@@ -51,7 +51,7 @@ public sealed class DemoService(
 
         {
             Product item = new(
-                id: "68719518371",
+                id: "bbbbbbbb-1111-2222-3333-cccccccccccc",
                 category: "gear-surf-surfboards",
                 name: "Kiama Classic Surfboard",
                 quantity: 25,
@@ -70,7 +70,7 @@ public sealed class DemoService(
 
         {
             ItemResponse<Product> response = await container.ReadItemAsync<Product>(
-                id: "68719518391",
+                id: "aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb",
                 partitionKey: new PartitionKey("gear-surf-surfboards")
             );
 

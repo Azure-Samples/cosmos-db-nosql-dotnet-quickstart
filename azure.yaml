@@ -18,12 +18,16 @@ hooks:
     windows:
       run: |
         dotnet user-secrets set "CONFIGURATION:AZURECOSMOSDB:ENDPOINT" "$env:CONFIGURATION__AZURECOSMOSDB__ENDPOINT" --project ./src/web/Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.csproj
+        dotnet user-secrets set "CONFIGURATION:AZURECOSMOSDB:DATABASENAME" "$env:CONFIGURATION__AZURECOSMOSDB__DATABASENAME" --project ./src/web/Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.csproj
+        dotnet user-secrets set "CONFIGURATION:AZURECOSMOSDB:CONTAINERNAME" "$env:CONFIGURATION__AZURECOSMOSDB__CONTAINERNAME" --project ./src/web/Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.csproj
       shell: pwsh
       continueOnError: false
       interactive: true
     posix:
       run: |
         dotnet user-secrets set "CONFIGURATION:AZURECOSMOSDB:ENDPOINT" "$CONFIGURATION__AZURECOSMOSDB__ENDPOINT" --project ./src/web/Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.csproj
+        dotnet user-secrets set "CONFIGURATION:AZURECOSMOSDB:DATABASENAME" "$CONFIGURATION__AZURECOSMOSDB__DATABASENAME" --project ./src/web/Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.csproj
+        dotnet user-secrets set "CONFIGURATION:AZURECOSMOSDB:CONTAINERNAME" "$CONFIGURATION__AZURECOSMOSDB__CONTAINERNAME" --project ./src/web/Microsoft.Samples.Cosmos.NoSQL.Quickstart.Web.csproj
       shell: sh
       continueOnError: false
       interactive: true
