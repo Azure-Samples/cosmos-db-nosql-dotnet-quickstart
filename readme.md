@@ -16,13 +16,13 @@ products:
 
 This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos) and  [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity) libraries from NuGet.
 
-### Prerequisites
+## Prerequisites
 
 - [Docker](https://www.docker.com/)
 - [Azure Developer CLI](https://aka.ms/azd-install)
 - [.NET SDK 9.0](https://dotnet.microsoft.com/download/dotnet/9.0) 
 
-### Quickstart
+## Quickstart
 
 1. Log in to Azure Developer CLI.
 
