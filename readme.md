@@ -12,9 +12,9 @@ products:
 ---
 -->
 
-# Quickstart: Azure Cosmos DB for NoSQL client library for .NET
+# Quickstart: Azure Cosmos DB for NoSQL - Azure SDK for .NET
 
-This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL's client library for .NET. This sample application accesses an existing account, database, and container using the [`Microsoft.Azure.Cosmos`](https://www.nuget.org/packages/Microsoft.Azure.Cosmos) and  [`Azure.Identity`](https://www.nuget.org/packages/Azure.Identity) libraries from NuGet.
+This is a simple Express web application to illustrate common basic usage of Azure Cosmos DB for NoSQL with the Azure SDK for .NET
 
 ## Prerequisites
 
@@ -24,14 +24,11 @@ This is a simple Blazor web application to illustrate common basic usage of Azur
 
 ## Quickstart
 
-1. Log in to Azure Developer CLI.
+1. Log in to Azure Developer CLI. *This is only required once per-install.*
 
     ```bash
     azd auth login
     ```
-
-    > [!TIP]
-    > This is only required once per-install.
 
 1. Initialize this template (`cosmos-db-nosql-dotnet-quickstart`) using `azd init`
 
