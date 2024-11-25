@@ -14,7 +14,7 @@ products:
 
 # Quickstart: Azure Cosmos DB for NoSQL - Azure SDK for .NET
 
-This is a simple Express web application to illustrate common basic usage of Azure Cosmos DB for NoSQL with the Azure SDK for .NET
+This is a simple Blazor web application to illustrate common basic usage of Azure Cosmos DB for NoSQL with the Azure SDK for .NET
 
 ## Prerequisites
 
